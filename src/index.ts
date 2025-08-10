@@ -5,8 +5,8 @@ import { database } from './database';
 
 dotenv.config();
 
-const emoji = '🌍';
-const channels_to_translate = ['1361347616801030335'];
+const emoji = '🤖';
+const channels_to_translate = ['1361347616801030335', '1393679526399180850', '1393671359040720906'];
 
 const AVAILABLE_LANGUAGES = [
 	{ label: 'Spanish', value: 'Spanish', emoji: '🇪🇸' },
@@ -150,7 +150,7 @@ client.on(discord.Events.MessageReactionAdd, async (reaction, user) => {
 
 	try {
 		const userExists = await database.userExists(userId);
-		
+
 		if (!userExists) {
 			const setupEmbed = createSetupEmbed();
 			const selectMenu = createLanguageSelectMenu();
@@ -232,12 +232,12 @@ client.on(discord.Events.InteractionCreate, async (interaction) => {
 			.addFields({ name: "What's next?", value: "React to any message with 🌍 in the designated channels and I'll send you a translation!", inline: false }, { name: 'Change language anytime', value: 'Just react to the 🌍 emoji again to update your language preference.', inline: false })
 			.setFooter({ text: 'Happy translating! 🌍' });
 
-		await interaction.update({ embeds: [successEmbed], components: [] });
+		await interaction.update({ embeds: [successEmbed] });
 		console.log(`User ${interaction.user.username} set their language to ${selectedLanguage}`);
 	} catch (error) {
 		console.error('Error saving user language preference:', error);
 		const errorEmbed = new discord.EmbedBuilder().setTitle('❌ Setup Error').setDescription('There was an error saving your language preference. Please try again.').setColor(0xff0000);
-		await interaction.update({ embeds: [errorEmbed], components: [] });
+		await interaction.update({ embeds: [errorEmbed] });
 	}
 });
 

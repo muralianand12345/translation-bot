@@ -8,8 +8,8 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const discord_js_1 = __importDefault(require("discord.js"));
 const database_1 = require("./database");
 dotenv_1.default.config();
-const emoji = '🌍';
-const channels_to_translate = ['1361347616801030335'];
+const emoji = '🤖';
+const channels_to_translate = ['1361347616801030335', '1393679526399180850', '1393671359040720906'];
 const AVAILABLE_LANGUAGES = [
     { label: 'Spanish', value: 'Spanish', emoji: '🇪🇸' },
     { label: 'French', value: 'French', emoji: '🇫🇷' },
@@ -225,13 +225,13 @@ client.on(discord_js_1.default.Events.InteractionCreate, async (interaction) => 
             .setColor(0x00ff00)
             .addFields({ name: "What's next?", value: "React to any message with 🌍 in the designated channels and I'll send you a translation!", inline: false }, { name: 'Change language anytime', value: 'Just react to the 🌍 emoji again to update your language preference.', inline: false })
             .setFooter({ text: 'Happy translating! 🌍' });
-        await interaction.update({ embeds: [successEmbed], components: [] });
+        await interaction.update({ embeds: [successEmbed] });
         console.log(`User ${interaction.user.username} set their language to ${selectedLanguage}`);
     }
     catch (error) {
         console.error('Error saving user language preference:', error);
         const errorEmbed = new discord_js_1.default.EmbedBuilder().setTitle('❌ Setup Error').setDescription('There was an error saving your language preference. Please try again.').setColor(0xff0000);
-        await interaction.update({ embeds: [errorEmbed], components: [] });
+        await interaction.update({ embeds: [errorEmbed] });
     }
 });
 const gracefulShutdown = async (signal) => {
