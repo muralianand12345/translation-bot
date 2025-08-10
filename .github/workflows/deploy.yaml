@@ -1,0 +1,298 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - prod
+  workflow_dispatch:
+
+env:
+  NAMESPACE: murali
+  REGISTRY_HOST: 192.168.0.103:5000
+  IMAGE_NAME: translation-bot
+
+jobs:
+  build-and-push:
+    name: Docker build
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.meta.outputs.image-tag }}
+      image-tar: ${{ steps.save-image.outputs.image-tar }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          cat > .env << 'EOF'
+          BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+          MONGO_URI=${{ secrets.MONGO_URI }}
+          OPENAI_BASE_URL=${{ secrets.OPENAI_BASE_URL }}
+          OPENAI_MODEL=${{ secrets.OPENAI_MODEL }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          EOF
+          echo "Created .env file"
+          ls -la .env
+
+      - name: Set up QEMU for multi-platform builds
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Generate image metadata
+        id: meta
+        run: |
+          IMAGE_TAG="${GITHUB_SHA:0:8}-$(date +%s)"
+          echo "image-tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+
+      - name: Build Docker image and save as TAR
+        id: save-image
+        run: |
+          docker buildx create --use --name mybuilder || true
+          docker buildx inspect mybuilder --bootstrap
+          docker buildx build \
+            --platform linux/arm64 \
+            --output type=docker \
+            -t ${IMAGE_NAME}:latest \
+            .
+          docker save ${IMAGE_NAME}:latest -o ${IMAGE_NAME}-image.tar
+          echo "image-tar=${IMAGE_NAME}-image.tar" >> $GITHUB_OUTPUT
+
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: ${{ steps.save-image.outputs.image-tar }}
+          retention-days: 1
+
+  provision-setup:
+    name: Setup Provision
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    outputs:
+      deployment-ready: ${{ steps.mark-success.outputs.success }}
+    steps:
+      - name: Download Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Copy image to server and push to registry
+        id: push-image
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: '${{ needs.build-and-push.outputs.image-tar }}'
+          target: '/tmp/'
+
+      - name: Load and push image to private registry
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            sudo docker load -i /tmp/${{ needs.build-and-push.outputs.image-tar }}
+            sudo docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY_HOST }}/${{ env.IMAGE_NAME }}:latest
+            sudo docker push ${{ env.REGISTRY_HOST }}/${{ env.IMAGE_NAME }}:latest
+            rm -f /tmp/${{ needs.build-and-push.outputs.image-tar }}
+
+      - name: Mark success
+        id: mark-success
+        run: echo "success=true" >> $GITHUB_OUTPUT
+
+  prepare-provisioning:
+    name: Prepare Provisioning
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Process K3s manifests with secrets substitution
+        run: |
+          IMAGE_TAG="${{ needs.build-and-push.outputs.image-tag }}"
+          mkdir -p processed-k3s          
+          for file in k3s/*.yaml k3s/*.yml; do
+            if [[ -f "$file" ]]; then
+              filename=$(basename "$file")
+              envsubst << EOF > "processed-k3s/$filename"
+          $(cat "$file" | \
+            sed "s|\${NAMESPACE}|${{ env.NAMESPACE }}|g" | \
+            sed "s|\${REGISTRY_HOST}|${{ env.REGISTRY_HOST }}|g" | \
+            sed "s|\${IMAGE_NAME}|${{ env.IMAGE_NAME }}|g" | \
+            sed "s|\${IMAGE_TAG}|${IMAGE_TAG}|g" | \
+            sed "s|\${BOT_TOKEN_B64}|$(echo -n '${{ secrets.BOT_TOKEN }}' | base64 -w 0)|g" | \
+            sed "s|\${MONGO_URI_B64}|$(echo -n '${{ secrets.MONGO_URI }}' | base64 -w 0)|g" | \
+            sed "s|\${OPENAI_BASE_URL_B64}|$(echo -n '${{ secrets.OPENAI_BASE_URL }}' | base64 -w 0)|g" | \
+            sed "s|\${OPENAI_MODEL_B64}|$(echo -n '${{ secrets.OPENAI_MODEL }}' | base64 -w 0)|g" | \
+            sed "s|\${OPENAI_API_KEY_B64}|$(echo -n '${{ secrets.OPENAI_API_KEY }}' | base64 -w 0)|g")
+          EOF
+            fi
+          done
+
+      - name: Upload processed K3s manifests as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: k3s-manifests
+          path: processed-k3s/
+          retention-days: 1
+
+  provisioning-deployment:
+    name: Provisioning Deployment
+    runs-on: ubuntu-latest
+    needs: [provision-setup, prepare-provisioning]
+    if: needs.provision-setup.outputs.deployment-ready == 'true'
+    environment: prod
+    timeout-minutes: 30
+    outputs:
+      provisioning-status: ${{ steps.set-output.outputs.status }}
+    steps:
+      - name: Download K3s manifests
+        uses: actions/download-artifact@v4
+        with:
+          name: k3s-manifests
+          path: k3s/
+
+      - name: Copy K3s manifests to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: 'k3s/*'
+          target: '/tmp/k3s-deployment-${{ github.run_id }}/'
+
+      - name: Apply K3s deployment
+        id: apply-k3s
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          timeout: 30m
+          command_timeout: 30m
+          script: |
+            # Use unique directory name to avoid conflicts
+            DEPLOY_DIR="/tmp/k3s-deployment-${{ github.run_id }}"
+
+            echo "=== Working in: $DEPLOY_DIR ==="
+
+            # Find the actual directory with YAML files
+            if [ -d "$DEPLOY_DIR/k3s" ]; then
+              YAML_DIR="$DEPLOY_DIR/k3s"
+            else
+              YAML_DIR="$DEPLOY_DIR"
+            fi
+
+            echo "=== Using YAML directory: $YAML_DIR ==="
+            cd "$YAML_DIR"
+
+            echo "Files in working directory:"
+            ls -la
+
+            # Apply namespace first
+            if [ -f "namespace.yaml" ]; then
+              echo "Applying namespace.yaml..."
+              sudo kubectl apply -f namespace.yaml
+            elif [ -f "namespace.yml" ]; then
+              echo "Applying namespace.yml..."
+              sudo kubectl apply -f namespace.yml
+            else
+              echo "No namespace file found, creating namespace directly..."
+              sudo kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | sudo kubectl apply -f -
+            fi
+
+            # Verify namespace exists
+            echo "Verifying namespace exists..."
+            kubectl get namespace ${{ env.NAMESPACE }}
+
+            # Apply all other YAML files (avoid shell glob errors)
+            echo "Applying remaining manifests..."
+
+            # Use find to avoid glob issues
+            find . -maxdepth 1 -name "*.yaml" -type f | while read -r file; do
+              filename=$(basename "$file")
+              if [[ "$filename" != "namespace.yaml" ]]; then
+                echo "Applying $filename..."
+                sudo kubectl apply -f "$file"
+              fi
+            done
+
+            find . -maxdepth 1 -name "*.yml" -type f | while read -r file; do
+              filename=$(basename "$file")
+              if [[ "$filename" != "namespace.yml" ]]; then
+                echo "Applying $filename..."
+                sudo kubectl apply -f "$file"
+              fi
+            done
+
+            echo "All manifests applied successfully"
+
+            # Wait a moment for resources to be created
+            sleep 5
+
+            # Handle deployment rollout
+            echo "Rolling out deployment..."
+            sudo kubectl rollout restart deployment/translation-bot -n ${{ env.NAMESPACE }}
+            sudo kubectl rollout status deployment/translation-bot -n ${{ env.NAMESPACE }} --timeout=300s
+
+            echo "Deployment completed successfully!"
+
+            # Clean up
+            rm -rf "$DEPLOY_DIR"
+
+      - name: Set success output
+        if: success()
+        id: set-output
+        run: echo "status=success" >> $GITHUB_OUTPUT
+
+  deployment-provisioned:
+    name: Deployment Provisioned
+    runs-on: ubuntu-latest
+    needs: [provisioning-deployment, build-and-push]
+    steps:
+      - name: Verify deployment status
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            sudo kubectl get namespace ${{ env.NAMESPACE }} -o wide
+            sudo kubectl get deployment translation-bot -n ${{ env.NAMESPACE }} -o wide
+            sudo kubectl get pods -n ${{ env.NAMESPACE }} -o wide
+            sudo kubectl get secrets -n ${{ env.NAMESPACE }}
+            sudo kubectl get services -n ${{ env.NAMESPACE }} -o wide
+            sudo kubectl get configmaps -n ${{ env.NAMESPACE }}
+            sudo kubectl get events -n ${{ env.NAMESPACE }} --sort-by='.lastTimestamp' | tail -10
+            sudo kubectl logs -n ${{ env.NAMESPACE }} -l app=translation-bot --tail=20 || echo "No logs available"
+
+      - name: Cleanup deployment artifacts
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            rm -rf /tmp/k3s-deployment-*
+            sudo docker image prune -f
+
+      - name: Deployment summary
+        run: |
+          echo "Translation Bot Deployment Complete"
+          echo "Image Tag: ${{ needs.build-and-push.outputs.image-tag }}"
+          echo "Namespace: ${{ env.NAMESPACE }}"
+          echo "Registry: ${{ env.REGISTRY_HOST }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Workflow: ${{ github.run_number }}"
