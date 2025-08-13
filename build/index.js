@@ -223,7 +223,7 @@ client.on(discord_js_1.default.Events.InteractionCreate, async (interaction) => 
             .setTitle('✅ Setup Complete!')
             .setDescription(`Your preferred language has been set to **${selectedLanguage}**.`)
             .setColor(0x00ff00)
-            .addFields({ name: "What's next?", value: "React to any message with 🌍 in the designated channels and I'll send you a translation!", inline: false }, { name: 'Change language anytime', value: 'Just react to the 🌍 emoji again to update your language preference.', inline: false })
+            .addFields({ name: "What's next?", value: "React to any message with 🌍 in the designated channels and I'll send you a translation!", inline: false }, { name: 'Change language anytime', value: 'Just choose from the below drop down menu.', inline: false })
             .setFooter({ text: 'Happy translating! 🌍' });
         await interaction.update({ embeds: [successEmbed] });
         console.log(`User ${interaction.user.username} set their language to ${selectedLanguage}`);
