@@ -9,7 +9,7 @@ const discord_js_1 = __importDefault(require("discord.js"));
 const database_1 = require("./database");
 dotenv_1.default.config();
 const emoji = '🤖';
-const channels_to_translate = ['1361347616801030335', '1393679526399180850', '1393671359040720906'];
+const channels_to_translate = ['1361347616801030335', '1419599345870966919'];
 const AVAILABLE_LANGUAGES = [
     { label: 'Spanish', value: 'Spanish', emoji: '🇪🇸' },
     { label: 'French', value: 'French', emoji: '🇫🇷' },
@@ -43,7 +43,7 @@ const client = new discord_js_1.default.Client({
 });
 const translateMessage = async (text, targetLanguage) => {
     const response = await openai.chat.completions.create({
-        model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+        model: process.env.OPENAI_MODEL || 'gpt-4.1-nano',
         messages: [
             {
                 role: 'system',
@@ -223,7 +223,7 @@ client.on(discord_js_1.default.Events.InteractionCreate, async (interaction) => 
             .setTitle('✅ Setup Complete!')
             .setDescription(`Your preferred language has been set to **${selectedLanguage}**.`)
             .setColor(0x00ff00)
-            .addFields({ name: "What's next?", value: "React to any message with 🌍 in the designated channels and I'll send you a translation!", inline: false }, { name: 'Change language anytime', value: 'Just react to the 🌍 emoji again to update your language preference.', inline: false })
+            .addFields({ name: "What's next?", value: "React to any message with 🌍 in the designated channels and I'll send you a translation!", inline: false }, { name: 'Change language anytime', value: 'Just choose from the below drop down menu.', inline: false })
             .setFooter({ text: 'Happy translating! 🌍' });
         await interaction.update({ embeds: [successEmbed] });
         console.log(`User ${interaction.user.username} set their language to ${selectedLanguage}`);
