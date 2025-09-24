@@ -6,7 +6,7 @@ import { database } from './database';
 dotenv.config();
 
 const emoji = '🤖';
-const channels_to_translate = ['1361347616801030335', '1419599345870966919'];
+const channels_to_translate = ['1393679526399180850', '1393671359040720906', ''];
 
 const AVAILABLE_LANGUAGES = [
 	{ label: 'Spanish', value: 'Spanish', emoji: '🇪🇸' },
