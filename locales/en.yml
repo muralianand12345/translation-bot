@@ -1,0 +1,81 @@
+commands:
+    language:
+        name: "language"
+        description: "Set language preferences for the bot"
+        options:
+            scope:
+                name: "scope"
+                description: "Set language"
+                choices:
+                    user: "user"
+                    reset: "reset"
+            language:
+                name: "language"
+                description: "Choose your preferred language"
+    feedback:
+        name: "feedback"
+        description: "Send feedback to the developers"
+    ping:
+        name: "ping"
+        description: "Check the bot's latency and connection status"
+    help:
+        name: "help"
+        description: "Display all available commands and their descriptions"
+        options:
+            command:
+                name: "command"
+                description: "Get detailed information about a specific command"
+
+responses:
+    errors:
+        no_permission: "🚫 {user}, You don't have permission to use this command!"
+        missing_user_perms: "🚫 You don't have `{permissions}` permissions to use this command!"
+        missing_bot_perms: "🚫 I need `{permissions}` permissions to execute this command!"
+        general_error: "An error occurred while executing this command."
+        feedback_failed: "Failed to send feedback. Please try again later."
+
+    language:
+        user_set: "Your language has been set to **{language}**"
+        reset: "Language preference has been reset. Using Discord's locale."
+        same_language: "Language is already set to **{language}**"
+        unsupported: "Language **{language}** is not supported. Supported languages: {languages}"
+
+    ping:
+        title: "🏓 Pong!"
+        description: "Bot latency and connection information"
+        api_latency: "API Latency"
+        websocket_latency: "WebSocket Latency"
+        database_latency: "Database Latency"
+        uptime: "Uptime"
+        memory_usage: "Memory Usage"
+        footer: "All systems operational"
+
+    help:
+        title: "📚 Command Help"
+        description: "Here are all {total} available commands. Use `{prefix}help <command>` for detailed information."
+        footer: "Use `/help <command>` for more details about a specific command"
+        command_footer: "Command Information"
+        command_not_found: "Command `{command}` not found."
+        cooldown: "Cooldown"
+        permissions: "Permissions"
+        category: "Category"
+        options: "Options"
+        no_cooldown: "None"
+        owner_only: "Owner Only"
+        none: "None"
+        no_commands: "No commands in this category"
+        categories:
+            music: "Music Commands"
+            utility: "Utility Commands"
+            other: "Other Commands"
+
+    feedback:
+        sent: "Thank you for your feedback! It has been sent to the developers."
+
+modals:
+    feedback:
+        title: "Send Feedback"
+        type_label: "Feedback Type"
+        type_placeholder: "Bug Report, Feature Request, General Feedback, etc."
+        feedback_label: "Your Feedback"
+        feedback_placeholder: "Please describe your feedback in detail..."
