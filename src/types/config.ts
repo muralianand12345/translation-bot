@@ -19,4 +19,7 @@ export interface IConfig {
 			server: string;
 		};
 	};
-};
+	ai: {
+		translate_model: string;
+	};
+}
