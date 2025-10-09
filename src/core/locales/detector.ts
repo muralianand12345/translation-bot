@@ -10,10 +10,10 @@ export class LocaleDetector {
 
 	constructor() {
 		this.localizationManager = LocalizationManager.getInstance();
-		this.supportedLanguages = this.initializeSupportedLanguages();
+		this.supportedLanguages = this.initializeSupportedLanguages(true);
 	}
 
-	private initializeSupportedLanguages = (): Array<{ code: string; name: string }> => {
+	private initializeSupportedLanguages = (returnAll: boolean = false): Array<{ code: string; name: string }> => {
 		const allLanguages = [
 			{ code: 'en', name: 'English' },
 			{ code: 'es', name: 'Español' },
@@ -46,6 +46,7 @@ export class LocaleDetector {
 			{ code: 'id', name: 'Bahasa Indonesia' },
 		];
 
+		if (returnAll) return allLanguages;
 		const supportedCodes = this.localizationManager.getSupportedLocales();
 		const filteredLanguages = allLanguages.filter((lang) => supportedCodes.includes(lang.code));
 		return filteredLanguages;
@@ -84,13 +85,16 @@ export class LocaleDetector {
 		}
 	};
 
-	public detectLocale = async (interaction: discord.ChatInputCommandInteraction | discord.ButtonInteraction | discord.AutocompleteInteraction | discord.ModalSubmitInteraction | discord.SelectMenuInteraction | discord.MessageComponentInteraction): Promise<string> => {
+	public detectLocale = async (interaction: discord.ChatInputCommandInteraction | discord.ButtonInteraction | discord.AutocompleteInteraction | discord.ModalSubmitInteraction | discord.SelectMenuInteraction | discord.MessageComponentInteraction | unknown): Promise<string> => {
 		try {
+			if (!interaction || typeof interaction !== 'object' || !('user' in interaction) || !interaction.user || typeof interaction.user !== 'object' || !('id' in interaction.user) || typeof interaction.user.id !== 'string') return 'en';
 			const userLanguage = await this.getUserLanguage(interaction.user.id);
 			if (userLanguage && this.localizationManager.isLocaleSupported(userLanguage)) return userLanguage;
 
-			const discordLocale = this.localizationManager.mapDiscordLocaleToOurs(interaction.locale);
-			if (this.localizationManager.isLocaleSupported(discordLocale)) return discordLocale;
+			if ('locale' in interaction && typeof interaction.locale === 'string') {
+				const discordLocale = this.localizationManager.mapDiscordLocaleToOurs(interaction.locale);
+				if (this.localizationManager.isLocaleSupported(discordLocale)) return discordLocale;
+			}
 
 			return 'en';
 		} catch (error) {
@@ -99,7 +103,7 @@ export class LocaleDetector {
 		}
 	};
 
-	public getTranslator = async (interaction: discord.ChatInputCommandInteraction | discord.ButtonInteraction | discord.AutocompleteInteraction | discord.ModalSubmitInteraction | discord.SelectMenuInteraction | discord.MessageComponentInteraction) => {
+	public getTranslator = async (interaction: discord.ChatInputCommandInteraction | discord.ButtonInteraction | discord.AutocompleteInteraction | discord.ModalSubmitInteraction | discord.SelectMenuInteraction | discord.MessageComponentInteraction | unknown) => {
 		const locale = await this.detectLocale(interaction);
 		return (key: string, data?: Record<string, string | number>) => {
 			return this.localizationManager.translate(key, locale, data);

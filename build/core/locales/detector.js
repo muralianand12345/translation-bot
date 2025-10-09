@@ -9,7 +9,7 @@ const manager_1 = require("./manager");
 const user_data_1 = __importDefault(require("../../events/database/schema/user_data"));
 class LocaleDetector {
     constructor() {
-        this.initializeSupportedLanguages = () => {
+        this.initializeSupportedLanguages = (returnAll = false) => {
             const allLanguages = [
                 { code: 'en', name: 'English' },
                 { code: 'es', name: 'Español' },
@@ -41,6 +41,8 @@ class LocaleDetector {
                 { code: 'hi', name: 'हिन्दी' },
                 { code: 'id', name: 'Bahasa Indonesia' },
             ];
+            if (returnAll)
+                return allLanguages;
             const supportedCodes = this.localizationManager.getSupportedLocales();
             const filteredLanguages = allLanguages.filter((lang) => supportedCodes.includes(lang.code));
             return filteredLanguages;
@@ -83,12 +85,16 @@ class LocaleDetector {
         };
         this.detectLocale = async (interaction) => {
             try {
+                if (!interaction || typeof interaction !== 'object' || !('user' in interaction) || !interaction.user || typeof interaction.user !== 'object' || !('id' in interaction.user) || typeof interaction.user.id !== 'string')
+                    return 'en';
                 const userLanguage = await this.getUserLanguage(interaction.user.id);
                 if (userLanguage && this.localizationManager.isLocaleSupported(userLanguage))
                     return userLanguage;
-                const discordLocale = this.localizationManager.mapDiscordLocaleToOurs(interaction.locale);
-                if (this.localizationManager.isLocaleSupported(discordLocale))
-                    return discordLocale;
+                if ('locale' in interaction && typeof interaction.locale === 'string') {
+                    const discordLocale = this.localizationManager.mapDiscordLocaleToOurs(interaction.locale);
+                    if (this.localizationManager.isLocaleSupported(discordLocale))
+                        return discordLocale;
+                }
                 return 'en';
             }
             catch (error) {
@@ -132,7 +138,7 @@ class LocaleDetector {
             return 'en';
         };
         this.localizationManager = manager_1.LocalizationManager.getInstance();
-        this.supportedLanguages = this.initializeSupportedLanguages();
+        this.supportedLanguages = this.initializeSupportedLanguages(true);
     }
 }
 exports.LocaleDetector = LocaleDetector;

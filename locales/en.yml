@@ -25,6 +25,8 @@ commands:
             command:
                 name: "command"
                 description: "Get detailed information about a specific command"
+    translate:
+        name: "translate"
 
 responses:
     errors:
@@ -33,12 +35,15 @@ responses:
         missing_bot_perms: "🚫 I need `{permissions}` permissions to execute this command!"
         general_error: "An error occurred while executing this command."
         feedback_failed: "Failed to send feedback. Please try again later."
+        not_found: "Could not find the target message to translate."
+        contact_dev: "Contact the developer for help."
 
     language:
         user_set: "Your language has been set to **{language}**"
         reset: "Language preference has been reset. Using Discord's locale."
         same_language: "Language is already set to **{language}**"
         unsupported: "Language **{language}** is not supported. Supported languages: {languages}"
+        not_set: "You don't have a language set. Use `/language` to choose your preferred language."
 
     ping:
         title: "🏓 Pong!"
@@ -71,6 +76,12 @@ responses:
 
     feedback:
         sent: "Thank you for your feedback! It has been sent to the developers."
+
+    translate:
+        nothing_to_translate: "There is nothing to translate in that message."
+
+    buttons:
+        support_server: "Support Server"
 
 modals:
     feedback:

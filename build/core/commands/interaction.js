@@ -39,17 +39,21 @@ class CommandInteractionHandler {
                 }
                 if (!this.validateInteraction())
                     return;
-                if (!this.interaction.isChatInputCommand())
-                    return;
-                const command = this.client.commands.get(this.interaction.commandName);
+                let interactionCommandName;
+                if (this.interaction.isChatInputCommand() || this.interaction.isMessageContextMenuCommand() || this.interaction.isUserContextMenuCommand())
+                    interactionCommandName = this.interaction.commandName;
+                if (!interactionCommandName)
+                    return this.client.logger.warn('[INTERACTION_CREATE] Could not determine command name from interaction.');
+                const command = this.client.commands.get(interactionCommandName);
                 if (!command)
-                    return this.client.logger.warn(`[INTERACTION_CREATE] Command ${this.interaction.commandName} not found.`);
+                    return this.client.logger.warn(`[INTERACTION_CREATE] Command ${interactionCommandName} not found.`);
                 if (await this.handleCommandPrerequisites(command))
                     await this.executeCommand(command);
             }
             catch (error) {
                 this.client.logger.error(`[INTERACTION_CREATE] Error processing interaction command: ${error}`);
-                if (this.interaction.isRepliable() && !this.interaction.replied && !this.interaction.deferred) {
+                const chatInt = this.interaction;
+                if (this.interaction.isRepliable() && !chatInt.replied && !chatInt.deferred) {
                     try {
                         await this.sendErrorReply('responses.errors.general_error');
                     }
@@ -65,12 +69,13 @@ class CommandInteractionHandler {
                 this.client.logger.warn('[INTERACTION_CREATE] Interaction is undefined.');
                 return false;
             }
-            if (!this.interaction.isChatInputCommand())
-                return false;
-            return true;
+            if (this.interaction.isChatInputCommand() || this.interaction.isMessageContextMenuCommand() || this.interaction.isUserContextMenuCommand())
+                return true;
+            return false;
         };
         this.sendErrorReply = async (messageKey, data) => {
-            if (!this.interaction.isRepliable() || this.interaction.replied || this.interaction.deferred)
+            const chat = this.interaction;
+            if (!this.interaction.isRepliable() || chat.replied || chat.deferred)
                 return;
             try {
                 const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000));
@@ -78,7 +83,7 @@ class CommandInteractionHandler {
                     const locale = await this.localeDetector.detectLocale(this.interaction);
                     const t = await this.localeDetector.getTranslator(this.interaction);
                     const message = t(messageKey, data);
-                    if (this.interaction.isRepliable() && !this.interaction.replied && !this.interaction.deferred)
+                    if (this.interaction.isRepliable() && !chat.replied && !chat.deferred)
                         await this.interaction.reply({ embeds: [new response_1.default(this.client).error(message, locale)], flags: discord_js_1.default.MessageFlags.Ephemeral });
                 })();
                 await Promise.race([replyPromise, timeoutPromise]);
@@ -96,8 +101,6 @@ class CommandInteractionHandler {
             }
         };
         this.handleCommandPrerequisites = async (command) => {
-            if (!this.interaction.isChatInputCommand())
-                return false;
             if (command.cooldown) {
                 const cooldownKey = `${command.data.name}${this.interaction.user.id}`;
                 if (CommandInteractionHandler.cooldown.has(cooldownKey)) {
@@ -130,18 +133,26 @@ class CommandInteractionHandler {
             return true;
         };
         this.executeCommand = async (command) => {
-            if (!this.interaction.isChatInputCommand())
-                return;
             const startTime = Date.now();
             try {
                 const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Command execution timeout')), 25000));
-                const commandPromise = command.execute(this.interaction, this.client);
-                await Promise.race([commandPromise, timeoutPromise]);
+                if (this.interaction.isChatInputCommand() || this.interaction.isMessageContextMenuCommand() || this.interaction.isUserContextMenuCommand()) {
+                    const execInteraction = this.interaction;
+                    const commandPromise = command.execute(execInteraction, this.client);
+                    await Promise.race([commandPromise, timeoutPromise]);
+                }
+                else {
+                    this.client.logger.warn('[INTERACTION_CREATE] Unsupported interaction type for command execution.');
+                    return;
+                }
                 const executionTime = Date.now() - startTime;
                 this.client.logger.debug(`[INTERACTION_CREATE] Command ${command.data.name} executed in ${executionTime}ms`);
+                let commandLogName = `/${this.interaction.commandName ?? 'unknown'}`;
+                if (this.interaction.isChatInputCommand())
+                    commandLogName += ` ${this.formatCommandOptions(this.interaction)}`;
                 await this.client.cmdLogger.log({
                     client: this.client,
-                    commandName: `/${this.interaction.commandName} ${this.formatCommandOptions(this.interaction)}`,
+                    commandName: commandLogName,
                     guild: this.interaction.guild,
                     user: this.interaction.user,
                     channel: this.interaction.channel,
@@ -162,10 +173,11 @@ class CommandInteractionHandler {
                 if (error instanceof Error && error.message === 'Command execution timeout')
                     this.client.logger.warn(`[INTERACTION_CREATE] Command ${command.data.name} timed out after 25 seconds`);
                 try {
-                    if (!this.interaction.replied && !this.interaction.deferred) {
+                    const chatInteraction = this.interaction;
+                    if (!chatInteraction.replied && !chatInteraction.deferred) {
                         await this.sendErrorReply('responses.errors.general_error');
                     }
-                    else if (this.interaction.deferred && this.interaction.isChatInputCommand()) {
+                    else if (chatInteraction.deferred && this.interaction.isChatInputCommand()) {
                         const locale = await this.localeDetector.detectLocale(this.interaction);
                         const t = await this.localeDetector.getTranslator(this.interaction);
                         const message = t('responses.errors.general_error');

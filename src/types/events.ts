@@ -7,17 +7,20 @@ export interface Command {
 	botPerms?: Array<discord.PermissionResolvable>;
 	cooldown?: number;
 	owner?: boolean;
-	execute: (interaction: discord.ChatInputCommandInteraction, client: discord.Client) => Promise<discord.InteractionResponse<boolean> | discord.Message<boolean> | void> | discord.Message<boolean> | discord.InteractionResponse<boolean> | void;
+	execute:
+		| ((interaction: discord.ChatInputCommandInteraction<discord.CacheType>, client: discord.Client) => Promise<discord.InteractionResponse<boolean> | discord.Message<boolean> | void> | discord.Message<boolean> | discord.InteractionResponse<boolean> | void)
+		| ((interaction: discord.MessageContextMenuCommandInteraction<discord.CacheType>, client: discord.Client) => Promise<discord.InteractionResponse<boolean> | discord.Message<boolean> | void> | discord.Message<boolean> | discord.InteractionResponse<boolean> | void)
+		| ((interaction: discord.UserContextMenuCommandInteraction<discord.CacheType>, client: discord.Client) => Promise<discord.InteractionResponse<boolean> | discord.Message<boolean> | void> | discord.Message<boolean> | discord.InteractionResponse<boolean> | void);
 	autocomplete?: (interaction: discord.AutocompleteInteraction, client: discord.Client) => Promise<void> | void;
-};
+}
 
 export interface BotEvent {
 	name: string;
 	once?: boolean | false;
 	execute: (...args: any[]) => void | Promise<void>;
-};
+}
 
 export interface BotPresence {
 	name: string;
 	type: discord.ActivityType;
-};
+}
