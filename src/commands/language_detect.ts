@@ -6,6 +6,7 @@ import DiscordResponse from '../core/response';
 import { ConfigManager } from '../utils/config';
 import { Translate as AITranslate } from '../core/ai/translate';
 import { LocalizationManager, LocaleDetector } from '../core/locales';
+import { getLanguageByCode } from '../constants/languages';
 
 const localizationManager = LocalizationManager.getInstance();
 const localeDetector = new LocaleDetector();
@@ -62,39 +63,7 @@ const translateCommand: Command = {
 
             const detectedLanguage = await translator.language_detect(textToDetect);
             
-            const allLanguages = [
-                { code: 'en', name: 'English' },
-                { code: 'es', name: 'Español' },
-                { code: 'fr', name: 'Français' },
-                { code: 'de', name: 'Deutsch' },
-                { code: 'pt', name: 'Português' },
-                { code: 'ja', name: '日本語' },
-                { code: 'ko', name: '한국어' },
-                { code: 'zh', name: '中文' },
-                { code: 'ru', name: 'Русский' },
-                { code: 'it', name: 'Italiano' },
-                { code: 'nl', name: 'Nederlands' },
-                { code: 'pl', name: 'Polski' },
-                { code: 'tr', name: 'Türkçe' },
-                { code: 'sv', name: 'Svenska' },
-                { code: 'no', name: 'Norsk' },
-                { code: 'da', name: 'Dansk' },
-                { code: 'fi', name: 'Suomi' },
-                { code: 'cs', name: 'Čeština' },
-                { code: 'bg', name: 'Български' },
-                { code: 'uk', name: 'Українська' },
-                { code: 'hr', name: 'Hrvatski' },
-                { code: 'ro', name: 'Română' },
-                { code: 'lt', name: 'Lietuvių' },
-                { code: 'el', name: 'Ελληνικά' },
-                { code: 'hu', name: 'Magyar' },
-                { code: 'th', name: 'ไทย' },
-                { code: 'vi', name: 'Tiếng Việt' },
-                { code: 'hi', name: 'हिन्दी' },
-                { code: 'id', name: 'Bahasa Indonesia' },
-            ];
-            
-            const languageInfo = allLanguages.find(lang => lang.code === detectedLanguage);
+            const languageInfo = getLanguageByCode(detectedLanguage);
             let languageDisplay: string;
             if (languageInfo) {
                 languageDisplay = `**${languageInfo.name} (${detectedLanguage.toUpperCase()})**`;

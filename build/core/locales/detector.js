@@ -7,44 +7,14 @@ exports.LocaleDetector = void 0;
 const bot_1 = __importDefault(require("../../bot"));
 const manager_1 = require("./manager");
 const user_data_1 = __importDefault(require("../../events/database/schema/user_data"));
+const languages_1 = require("../../constants/languages");
 class LocaleDetector {
     constructor() {
         this.initializeSupportedLanguages = (returnAll = false) => {
-            const allLanguages = [
-                { code: 'en', name: 'English' },
-                { code: 'es', name: 'Español' },
-                { code: 'fr', name: 'Français' },
-                { code: 'de', name: 'Deutsch' },
-                { code: 'pt', name: 'Português' },
-                { code: 'ja', name: '日本語' },
-                { code: 'ko', name: '한국어' },
-                { code: 'zh', name: '中文' },
-                { code: 'ru', name: 'Русский' },
-                { code: 'it', name: 'Italiano' },
-                { code: 'nl', name: 'Nederlands' },
-                { code: 'pl', name: 'Polski' },
-                { code: 'tr', name: 'Türkçe' },
-                { code: 'sv', name: 'Svenska' },
-                { code: 'no', name: 'Norsk' },
-                { code: 'da', name: 'Dansk' },
-                { code: 'fi', name: 'Suomi' },
-                { code: 'cs', name: 'Čeština' },
-                { code: 'bg', name: 'Български' },
-                { code: 'uk', name: 'Українська' },
-                { code: 'hr', name: 'Hrvatski' },
-                { code: 'ro', name: 'Română' },
-                { code: 'lt', name: 'Lietuvių' },
-                { code: 'el', name: 'Ελληνικά' },
-                { code: 'hu', name: 'Magyar' },
-                { code: 'th', name: 'ไทย' },
-                { code: 'vi', name: 'Tiếng Việt' },
-                { code: 'hi', name: 'हिन्दी' },
-                { code: 'id', name: 'Bahasa Indonesia' },
-            ];
             if (returnAll)
-                return allLanguages;
+                return [...languages_1.ALL_LANGUAGES];
             const supportedCodes = this.localizationManager.getSupportedLocales();
-            const filteredLanguages = allLanguages.filter((lang) => supportedCodes.includes(lang.code));
+            const filteredLanguages = languages_1.ALL_LANGUAGES.filter((lang) => supportedCodes.includes(lang.code));
             return filteredLanguages;
         };
         this.validateLanguageCode = (language) => {
@@ -115,7 +85,7 @@ class LocaleDetector {
             return [...this.supportedLanguages];
         };
         this.getLanguageStats = () => {
-            const allCodes = ['en', 'es', 'fr', 'de', 'pt', 'ja', 'ko', 'zh', 'ru', 'it', 'nl', 'pl', 'tr', 'sv', 'no', 'da', 'fi', 'cs', 'bg', 'uk', 'hr', 'ro', 'lt', 'el', 'hu', 'th', 'vi', 'hi', 'id'];
+            const allCodes = (0, languages_1.getAllLanguageCodes)();
             const supportedCodes = this.supportedLanguages.map((lang) => lang.code);
             const missingCodes = allCodes.filter((code) => !supportedCodes.includes(code));
             return { total: allCodes.length, supported: supportedCodes.length, missing: missingCodes.length, supportedCodes, missingCodes };
