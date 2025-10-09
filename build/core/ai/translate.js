@@ -52,19 +52,55 @@ class Translate {
                 throw new Error(error?.message ?? String(error));
             }
         };
-        this.invoke = async (input, targetLang) => {
+        this.invoke = async (input, targetLang, retry = 5) => {
             const messages = [
-                { role: 'system', content: `You are a helpful translation assistant. Translate the user's text to ${targetLang} and respond only with a JSON object matching the schema: "{ "text": "...translated text..." }". Do not include any additional explanation..` },
+                { role: 'system', content: `You are a helpful translation assistant. Translate the user's text to ${targetLang} and respond only with a JSON object matching the schema: "{ \"text\": \"...translated text...\" }". Do not include any additional explanation.` },
                 { role: 'user', content: input },
             ];
-            try {
-                const response = await this.ai.invoke(messages, bot_1.default.config.ai.translate_model, { response_format: { type: 'json_object' } }); //response_format: { type: 'json_schema', json_schema: { name: 'translation_response', schema: z.toJSONSchema(translationResponseSchema) } } });
-                const raw = JSON.parse(response.choices[0].message.content || '{}');
-                return schema_1.translationResponseSchema.parse(raw);
+            let attempt = 0;
+            let lastErr = null;
+            while (attempt < retry) {
+                attempt++;
+                try {
+                    const response = await this.ai.invoke(messages, bot_1.default.config.ai.translate_model, { response_format: { type: 'json_object' } }); //response_format: { type: 'json_schema', json_schema: { name: 'translation_response', schema: z.toJSONSchema(translationResponseSchema) } } });
+                    const content = response?.choices?.[0]?.message?.content;
+                    if (!content || typeof content !== 'string')
+                        throw new Error('Empty response content');
+                    let parsed = null;
+                    try {
+                        parsed = JSON.parse(content);
+                    }
+                    catch (e) {
+                        const match = content.match(/\{[\s\S]*\}/);
+                        if (match) {
+                            try {
+                                parsed = JSON.parse(match[0]);
+                            }
+                            catch (e2) {
+                                throw new Error('Failed to parse JSON from model response');
+                            }
+                        }
+                        else {
+                            throw new Error('No JSON object found in model response');
+                        }
+                    }
+                    const result = schema_1.translationResponseSchema.parse(parsed);
+                    return result;
+                }
+                catch (err) {
+                    lastErr = err;
+                    bot_1.default.logger.warn(`[AI_TRANSLATE] Attempt ${attempt} failed: ${err?.message ?? String(err)}`);
+                    if (attempt >= retry)
+                        break;
+                    const baseDelay = 500;
+                    const backoff = baseDelay * Math.pow(2, attempt - 1);
+                    const jitter = Math.floor(Math.random() * 300);
+                    const delay = backoff + jitter;
+                    await new Promise((res) => setTimeout(res, delay));
+                }
             }
-            catch (err) {
-                throw new Error(`Translation failed: ${err?.message ?? String(err)}`);
-            }
+            bot_1.default.logger.error(`[AI_TRANSLATE] All ${retry} attempts failed translating to ${targetLang}: ${lastErr}`);
+            throw new Error(`Translation failed after ${retry} attempts: ${lastErr?.message ?? String(lastErr)}`);
         };
     }
 }
