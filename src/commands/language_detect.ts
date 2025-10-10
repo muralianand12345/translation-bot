@@ -6,7 +6,7 @@ import DiscordResponse from '../core/response';
 import { ConfigManager } from '../utils/config';
 import { Translate as AITranslate } from '../core/ai/translate';
 import { LocalizationManager, LocaleDetector } from '../core/locales';
-import { getLanguageByCode } from '../constants/languages';
+import { getLanguageByCode } from '../types/languages';
 
 const localizationManager = LocalizationManager.getInstance();
 const localeDetector = new LocaleDetector();

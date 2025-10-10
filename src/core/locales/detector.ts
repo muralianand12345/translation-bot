@@ -3,7 +3,7 @@ import discord from 'discord.js';
 import client from '../../bot';
 import { LocalizationManager } from './manager';
 import user_data from '../../events/database/schema/user_data';
-import { ALL_LANGUAGES, LanguageInfo, getAllLanguageCodes } from '../../constants/languages';
+import { ALL_LANGUAGES, LanguageInfo, getAllLanguageCodes } from '../../types/languages';
 
 export class LocaleDetector {
 	private localizationManager: LocalizationManager;

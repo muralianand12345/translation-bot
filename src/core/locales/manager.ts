@@ -4,7 +4,7 @@ import yaml from 'yaml';
 import discord from 'discord.js';
 
 import { ILocaleData, IInterpolationData } from '../../types';
-import { mapToDiscordLocale, mapDiscordLocaleToLanguage } from '../../constants/languages';
+import { mapToDiscordLocale, mapDiscordLocaleToLanguage } from '../../types/languages';
 
 export class LocalizationManager {
 	private static instance: LocalizationManager;

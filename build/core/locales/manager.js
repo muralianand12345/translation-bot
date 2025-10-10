@@ -7,7 +7,7 @@ exports.LocalizationManager = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const yaml_1 = __importDefault(require("yaml"));
-const languages_1 = require("../../constants/languages");
+const languages_1 = require("../../types/languages");
 class LocalizationManager {
     constructor() {
         this.locales = new Map();

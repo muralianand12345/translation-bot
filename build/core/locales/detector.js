@@ -7,7 +7,7 @@ exports.LocaleDetector = void 0;
 const bot_1 = __importDefault(require("../../bot"));
 const manager_1 = require("./manager");
 const user_data_1 = __importDefault(require("../../events/database/schema/user_data"));
-const languages_1 = require("../../constants/languages");
+const languages_1 = require("../../types/languages");
 class LocaleDetector {
     constructor() {
         this.initializeSupportedLanguages = (returnAll = false) => {
