@@ -86,44 +86,11 @@ class Translate {
                 throw new Error(error?.message ?? String(error));
             }
         };
-        this.language_detect_ai = async (input) => {
-            const messages = [
-                { role: 'system', content: `You are a helpful assistant that detects the language of the user's text. Respond only with the ISO 639-1 language code (e.g., "en" for English, "ja" for Japanese). Do not include any additional explanation.` },
-                { role: 'user', content: input },
-            ];
-            try {
-                const response = await this.ai.invoke(messages, bot_1.default.config.ai.translate_model);
-                const content = response?.choices?.[0]?.message?.content;
-                if (!content || typeof content !== 'string')
-                    throw new Error('Empty response content');
-                const langCode = content.trim().toLowerCase();
-                if (!/^[a-z]{2}$/.test(langCode)) {
-                    throw new Error(`Invalid language code received: "${langCode}"`);
-                }
-                return langCode;
-            }
-            catch (err) {
-                bot_1.default.logger.error(`[AI_TRANSLATE] Language detection failed: ${err?.message ?? String(err)}`);
-                throw new Error(`Language detection failed: ${err?.message ?? String(err)}`);
-            }
-        };
         this.language_detect = async (text) => {
             try {
                 const detectedResults = langdetect.detect(text);
                 const detected = Array.isArray(detectedResults) && detectedResults.length > 0 ? detectedResults[0] : null;
                 const detected_lang = detected ? detected.lang : 'unknown';
-                if (detected_lang === 'unknown' || !detected_lang || detected_lang.length !== 2) {
-                    bot_1.default.logger.warn(`[AI] Language detection uncertain, falling back to AI`);
-                    try {
-                        const aiLang = await this.language_detect_ai(text);
-                        bot_1.default.logger.debug(`[AI] Detected language via AI: ${aiLang}`);
-                        return aiLang;
-                    }
-                    catch (error) {
-                        bot_1.default.logger.error(`[AI] Error detecting language via AI: ${error}`);
-                        return 'unknown';
-                    }
-                }
                 bot_1.default.logger.debug(`[NON-AI] Detected language: ${detected_lang} (confidence: ${detected?.prob})`);
                 return detected_lang;
             }

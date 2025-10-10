@@ -47,45 +47,11 @@ export class Translate {
 		}
 	};
 	
-	language_detect_ai = async (input: string): Promise<string> => {
-		const messages = [
-			{ role: 'system' as const, content: `You are a helpful assistant that detects the language of the user's text. Respond only with the ISO 639-1 language code (e.g., "en" for English, "ja" for Japanese). Do not include any additional explanation.` },
-			{ role: 'user' as const, content: input },
-		];
-
-		try {
-			const response = await this.ai.invoke(messages, client.config.ai.translate_model);
-			const content = response?.choices?.[0]?.message?.content;
-			if (!content || typeof content !== 'string') throw new Error('Empty response content');
-
-			const langCode = content.trim().toLowerCase();
-			if (!/^[a-z]{2}$/.test(langCode)) {
-				throw new Error(`Invalid language code received: "${langCode}"`);
-			}
-
-			return langCode;
-		} catch (err: any) {
-			client.logger.error(`[AI_TRANSLATE] Language detection failed: ${err?.message ?? String(err)}`);
-			throw new Error(`Language detection failed: ${err?.message ?? String(err)}`);
-		}
-	};
-	
 	language_detect = async (text: string): Promise<string> => {
 		try {
 			const detectedResults = langdetect.detect(text);
 			const detected = Array.isArray(detectedResults) && detectedResults.length > 0 ? detectedResults[0] : null;
 			const detected_lang = detected ? detected.lang : 'unknown';
-			if (detected_lang === 'unknown' || !detected_lang || detected_lang.length !== 2) {
-				client.logger.warn(`[AI] Language detection uncertain, falling back to AI`);
-				try {
-					const aiLang = await this.language_detect_ai(text);
-					client.logger.debug(`[AI] Detected language via AI: ${aiLang}`);
-					return aiLang;
-				} catch (error) {
-					client.logger.error(`[AI] Error detecting language via AI: ${error}`);
-					return 'unknown';
-				}
-			}
 			client.logger.debug(`[NON-AI] Detected language: ${detected_lang} (confidence: ${detected?.prob})`);
 			return detected_lang;
 		} catch (error) {
