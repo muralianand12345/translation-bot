@@ -97,6 +97,11 @@
   resolved "https://registry.yarnpkg.com/@sapphire/snowflake/-/snowflake-3.5.5.tgz#33a60ab4231e3cab29e8a0077f342125f2c8d1bd"
   integrity sha512-xzvBr1Q1c4lCe7i6sRnrofxeO1QTP/LKQ6A6qy0iB4x5yfiSfARMEQEghojzTNALDTcv8En04qYNIco9/K9eZQ==
 
+"@types/langdetect@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@types/langdetect/-/langdetect-0.2.2.tgz#67a62c016ff0da3980c58c0c417912fcec36876d"
+  integrity sha512-wBYdB/PlRN7K30x37Pi/A7+KIFDNaqliz8IpUY0joG0Coyfszenspx0ID2s0KBAdNHXbd2WoMmpV5orFwGojUQ==
+
 "@types/ms@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@types/ms/-/ms-2.1.0.tgz#052aa67a48eccc4309d7f0191b7e41434b90bb78"
@@ -195,6 +200,13 @@ kareem@2.6.3:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/kareem/-/kareem-2.6.3.tgz#23168ec8ffb6c1abfd31b7169a6fb1dd285992ac"
   integrity sha512-C3iHfuGUXK2u8/ipq9LfjFfXFxAZMQJJq7vLS45r3D9Y2xQ/m4S8zaR4zMLFWh9AsNPXmcFfUDhTEO8UIC/V6Q==
+
+langdetect@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/langdetect/-/langdetect-0.2.1.tgz#d7ca8339497a4dd65c4df935d46e344bfea86d01"
+  integrity sha512-vWK2xz8Urp6J0RFwnrR8+d0DQ2yIGjCOqAxBoXNMVFv4ZDmFsbCcNEtwuVnaQ5+ltwZ4Z5rTtuTwHSaEWFdw+A==
+  dependencies:
+    unicode-9.0.0 "0.7.0"
 
 lodash.snakecase@4.1.1:
   version "4.1.1"
@@ -321,6 +333,11 @@ undici@6.21.3:
   version "6.21.3"
   resolved "https://registry.yarnpkg.com/undici/-/undici-6.21.3.tgz#185752ad92c3d0efe7a7d1f6854a50f83b552d7a"
   integrity sha512-gBLkYIlEnSp8pFbT64yFgGE6UIB9tAkhukC23PmMDCe5Nd+cRqKxSjw5y54MK2AZMgZfJWMaNE4nYUHgi1XEOw==
+
+unicode-9.0.0@0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/unicode-9.0.0/-/unicode-9.0.0-0.7.0.tgz#4d303caf9c6dbf2b979943c18a384e226643b937"
+  integrity sha512-aqL0GQ3LB2nC3ZEKBZ93hfn7QY80sVGk+OT9Sc6lTxl4wRiwzUBRlAjJB9Fe4+5XydXOV+tb8udp5oRBoED5Tw==
 
 webidl-conversions@^7.0.0:
   version "7.0.0"

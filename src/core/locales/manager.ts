@@ -4,6 +4,7 @@ import yaml from 'yaml';
 import discord from 'discord.js';
 
 import { ILocaleData, IInterpolationData } from '../../types';
+import { mapToDiscordLocale, mapDiscordLocaleToLanguage } from '../../types/languages';
 
 export class LocalizationManager {
 	private static instance: LocalizationManager;
@@ -156,7 +157,7 @@ export class LocalizationManager {
 			if (locale === this.defaultLocale) continue;
 			const translation = this.getNestedValue(data, key);
 			if (translation && typeof translation === 'string') {
-				const discordLocale = this.mapToDiscordLocale(locale);
+				const discordLocale = mapToDiscordLocale(locale);
 				if (discordLocale) localizations[discordLocale] = translation;
 			}
 		}
@@ -164,77 +165,8 @@ export class LocalizationManager {
 		return localizations;
 	};
 
-	private mapToDiscordLocale = (locale: string): discord.Locale | null => {
-		const mapping: Record<string, discord.Locale> = {
-			en: discord.Locale.EnglishUS,
-			es: discord.Locale.SpanishES,
-			fr: discord.Locale.French,
-			de: discord.Locale.German,
-			pt: discord.Locale.PortugueseBR,
-			ja: discord.Locale.Japanese,
-			ko: discord.Locale.Korean,
-			zh: discord.Locale.ChineseCN,
-			ru: discord.Locale.Russian,
-			it: discord.Locale.Italian,
-			nl: discord.Locale.Dutch,
-			pl: discord.Locale.Polish,
-			tr: discord.Locale.Turkish,
-			sv: discord.Locale.Swedish,
-			no: discord.Locale.Norwegian,
-			da: discord.Locale.Danish,
-			fi: discord.Locale.Finnish,
-			cs: discord.Locale.Czech,
-			bg: discord.Locale.Bulgarian,
-			uk: discord.Locale.Ukrainian,
-			hr: discord.Locale.Croatian,
-			ro: discord.Locale.Romanian,
-			lt: discord.Locale.Lithuanian,
-			el: discord.Locale.Greek,
-			hu: discord.Locale.Hungarian,
-			th: discord.Locale.Thai,
-			vi: discord.Locale.Vietnamese,
-			hi: discord.Locale.Hindi,
-			id: discord.Locale.Indonesian,
-		};
-
-		return mapping[locale] || null;
-	};
-
 	public mapDiscordLocaleToOurs = (discordLocale: string): string => {
-		const mapping: Record<string, string> = {
-			[discord.Locale.EnglishUS]: 'en',
-			[discord.Locale.EnglishGB]: 'en',
-			[discord.Locale.SpanishES]: 'es',
-			[discord.Locale.French]: 'fr',
-			[discord.Locale.German]: 'de',
-			[discord.Locale.PortugueseBR]: 'pt',
-			[discord.Locale.Japanese]: 'ja',
-			[discord.Locale.Korean]: 'ko',
-			[discord.Locale.ChineseCN]: 'zh',
-			[discord.Locale.Russian]: 'ru',
-			[discord.Locale.Italian]: 'it',
-			[discord.Locale.Dutch]: 'nl',
-			[discord.Locale.Polish]: 'pl',
-			[discord.Locale.Turkish]: 'tr',
-			[discord.Locale.Swedish]: 'sv',
-			[discord.Locale.Norwegian]: 'no',
-			[discord.Locale.Danish]: 'da',
-			[discord.Locale.Finnish]: 'fi',
-			[discord.Locale.Czech]: 'cs',
-			[discord.Locale.Bulgarian]: 'bg',
-			[discord.Locale.Ukrainian]: 'uk',
-			[discord.Locale.Croatian]: 'hr',
-			[discord.Locale.Romanian]: 'ro',
-			[discord.Locale.Lithuanian]: 'lt',
-			[discord.Locale.Greek]: 'el',
-			[discord.Locale.Hungarian]: 'hu',
-			[discord.Locale.Thai]: 'th',
-			[discord.Locale.Vietnamese]: 'vi',
-			[discord.Locale.Hindi]: 'hi',
-			[discord.Locale.Indonesian]: 'id',
-		};
-
-		return mapping[discordLocale] || this.defaultLocale;
+		return mapDiscordLocaleToLanguage(discordLocale, this.defaultLocale);
 	};
 
 	public validateLocaleCompleteness = (locale: string): { missingKeys: string[]; extraKeys: string[]; isComplete: boolean } => {

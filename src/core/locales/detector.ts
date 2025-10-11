@@ -3,52 +3,21 @@ import discord from 'discord.js';
 import client from '../../bot';
 import { LocalizationManager } from './manager';
 import user_data from '../../events/database/schema/user_data';
+import { ALL_LANGUAGES, LanguageInfo, getAllLanguageCodes } from '../../types/languages';
 
 export class LocaleDetector {
 	private localizationManager: LocalizationManager;
-	private readonly supportedLanguages: Array<{ code: string; name: string }>;
+	private readonly supportedLanguages: LanguageInfo[];
 
 	constructor() {
 		this.localizationManager = LocalizationManager.getInstance();
 		this.supportedLanguages = this.initializeSupportedLanguages(true);
 	}
 
-	private initializeSupportedLanguages = (returnAll: boolean = false): Array<{ code: string; name: string }> => {
-		const allLanguages = [
-			{ code: 'en', name: 'English' },
-			{ code: 'es', name: 'Español' },
-			{ code: 'fr', name: 'Français' },
-			{ code: 'de', name: 'Deutsch' },
-			{ code: 'pt', name: 'Português' },
-			{ code: 'ja', name: '日本語' },
-			{ code: 'ko', name: '한국어' },
-			{ code: 'zh', name: '中文' },
-			{ code: 'ru', name: 'Русский' },
-			{ code: 'it', name: 'Italiano' },
-			{ code: 'nl', name: 'Nederlands' },
-			{ code: 'pl', name: 'Polski' },
-			{ code: 'tr', name: 'Türkçe' },
-			{ code: 'sv', name: 'Svenska' },
-			{ code: 'no', name: 'Norsk' },
-			{ code: 'da', name: 'Dansk' },
-			{ code: 'fi', name: 'Suomi' },
-			{ code: 'cs', name: 'Čeština' },
-			{ code: 'bg', name: 'Български' },
-			{ code: 'uk', name: 'Українська' },
-			{ code: 'hr', name: 'Hrvatski' },
-			{ code: 'ro', name: 'Română' },
-			{ code: 'lt', name: 'Lietuvių' },
-			{ code: 'el', name: 'Ελληνικά' },
-			{ code: 'hu', name: 'Magyar' },
-			{ code: 'th', name: 'ไทย' },
-			{ code: 'vi', name: 'Tiếng Việt' },
-			{ code: 'hi', name: 'हिन्दी' },
-			{ code: 'id', name: 'Bahasa Indonesia' },
-		];
-
-		if (returnAll) return allLanguages;
+	private initializeSupportedLanguages = (returnAll: boolean = false): LanguageInfo[] => {
+		if (returnAll) return [...ALL_LANGUAGES];
 		const supportedCodes = this.localizationManager.getSupportedLocales();
-		const filteredLanguages = allLanguages.filter((lang) => supportedCodes.includes(lang.code));
+		const filteredLanguages = ALL_LANGUAGES.filter((lang) => supportedCodes.includes(lang.code));
 		return filteredLanguages;
 	};
 
@@ -114,12 +83,12 @@ export class LocaleDetector {
 		return this.validateLanguageCode(language);
 	};
 
-	public getSupportedLanguages = (): Array<{ code: string; name: string }> => {
+	public getSupportedLanguages = (): LanguageInfo[] => {
 		return [...this.supportedLanguages];
 	};
 
 	public getLanguageStats = (): { total: number; supported: number; missing: number; supportedCodes: string[]; missingCodes: string[] } => {
-		const allCodes = ['en', 'es', 'fr', 'de', 'pt', 'ja', 'ko', 'zh', 'ru', 'it', 'nl', 'pl', 'tr', 'sv', 'no', 'da', 'fi', 'cs', 'bg', 'uk', 'hr', 'ro', 'lt', 'el', 'hu', 'th', 'vi', 'hi', 'id'];
+		const allCodes = getAllLanguageCodes();
 
 		const supportedCodes = this.supportedLanguages.map((lang) => lang.code);
 		const missingCodes = allCodes.filter((code) => !supportedCodes.includes(code));
@@ -133,7 +102,7 @@ export class LocaleDetector {
 		return { isValid, currentLanguage, needsUpdate: !isValid };
 	};
 
-	public getAvailableLanguagesForUser = (query: string = ''): Array<{ code: string; name: string }> => {
+	public getAvailableLanguagesForUser = (query: string = ''): LanguageInfo[] => {
 		const lowerQuery = query.toLowerCase();
 		return this.supportedLanguages.filter((lang) => lang.name.toLowerCase().includes(lowerQuery) || lang.code.toLowerCase().includes(lowerQuery));
 	};
