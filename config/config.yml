@@ -1,0 +1,22 @@
+bot:
+    owners:
+        - "678402714765361182"
+    presence:
+        enabled: true
+        status: "online"
+        interval: 15
+        activity:
+            - type: "PLAYING"
+              name: "with translations"
+            - type: "LISTENING"
+              name: "your commands"
+            - type: "WATCHING"
+              name: "for messages to translate"
+    command:
+        cooldown_message: "Cooldown: Please wait <duration> seconds."
+    log:
+        command: "1425776060582334507"
+        server: "1425776097139888158"
+
+ai:
+    translate_model: "llama-3.1-8b-instant"
