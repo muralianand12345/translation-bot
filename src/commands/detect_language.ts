@@ -14,7 +14,7 @@ const config = ConfigManager.getInstance();
 
 const translateCommand: Command = {
 	cooldown: 3,
-	data: new discord.ContextMenuCommandBuilder().setName('Language Detective').setType(discord.ApplicationCommandType.Message).setNameLocalizations(localizationManager.getCommandLocalizations('commands.translate.name')),
+	data: new discord.ContextMenuCommandBuilder().setName('Detect Language').setType(discord.ApplicationCommandType.Message).setNameLocalizations(localizationManager.getCommandLocalizations('commands.detect_language.name')),
 	execute: async (interaction: discord.MessageContextMenuCommandInteraction, client: discord.Client): Promise<discord.InteractionResponse<boolean> | discord.Message<boolean> | void> => {
 		await interaction.deferReply({ flags: discord.MessageFlags.Ephemeral });
 
@@ -49,7 +49,7 @@ const translateCommand: Command = {
 
 			if (!textToDetect && message.content && message.content.trim().length > 0) textToDetect = message.content;
 			if (!textToDetect || textToDetect.trim().length === 0) {
-				const embed = responseHandler.info(t('responses.translate.nothing_to_translate'));
+				const embed = responseHandler.info(t('responses.detect_language.nothing_to_detect'));
 				return await interaction.editReply({ embeds: [embed] });
 			}
 

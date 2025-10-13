@@ -74,6 +74,7 @@ const translateCommand = {
                     .setFooter({ text: interaction.client.user?.username || 'Bot' });
                 return await interaction.editReply({ embeds: [embed] });
             }
+            //TODO: Add webhook logger
             const embed = responseHandler.info(t('responses.translate.nothing_to_translate'));
             return await interaction.editReply({ embeds: [embed] });
         }

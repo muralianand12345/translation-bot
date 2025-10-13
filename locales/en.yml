@@ -27,6 +27,8 @@ commands:
                 description: "Get detailed information about a specific command"
     translate:
         name: "translate"
+    detect_language:
+        name: 'Detect Language'
 
 responses:
     errors:
@@ -79,6 +81,9 @@ responses:
 
     translate:
         nothing_to_translate: "There is nothing to translate in that message."
+    
+    detect_language:
+        nothing_to_detect: "There is no text to detect the language."
 
     buttons:
         support_server: "Support Server"

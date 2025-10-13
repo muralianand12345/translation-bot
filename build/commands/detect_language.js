@@ -14,7 +14,7 @@ const localeDetector = new locales_1.LocaleDetector();
 const config = config_1.ConfigManager.getInstance();
 const translateCommand = {
     cooldown: 3,
-    data: new discord_js_1.default.ContextMenuCommandBuilder().setName('Language Detective').setType(discord_js_1.default.ApplicationCommandType.Message).setNameLocalizations(localizationManager.getCommandLocalizations('commands.translate.name')),
+    data: new discord_js_1.default.ContextMenuCommandBuilder().setName('Detect Language').setType(discord_js_1.default.ApplicationCommandType.Message).setNameLocalizations(localizationManager.getCommandLocalizations('commands.detect_language.name')),
     execute: async (interaction, client) => {
         await interaction.deferReply({ flags: discord_js_1.default.MessageFlags.Ephemeral });
         const t = await localeDetector.getTranslator(interaction);
@@ -50,7 +50,7 @@ const translateCommand = {
             if (!textToDetect && message.content && message.content.trim().length > 0)
                 textToDetect = message.content;
             if (!textToDetect || textToDetect.trim().length === 0) {
-                const embed = responseHandler.info(t('responses.translate.nothing_to_translate'));
+                const embed = responseHandler.info(t('responses.detect_language.nothing_to_detect'));
                 return await interaction.editReply({ embeds: [embed] });
             }
             const detectedLanguage = await translator.language_detect(textToDetect, interaction.locale || 'en');
