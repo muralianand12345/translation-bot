@@ -60,7 +60,7 @@ export class Translate {
 
 	invoke = async (input: string, targetLang: string, retry: number = 5): Promise<TranslationResponse> => {
 		const messages = [
-			{ role: 'system' as const, content: `You are a helpful translation assistant. Translate the user's text to ${targetLang} and respond only with a JSON object matching the schema: "{ \"text\": \"...translated text...\" }". Do not include any additional explanation.` },
+			{ role: 'system' as const, content: `You are a helpful translation assistant. Translate the user's text to ${targetLang} and respond only with a JSON object matching the schema: "{ \"text\": \"...translated text...\" }". Do not include any additional explanation. Be smart to identify the context and nuances of the text. If the text has a name, make sure to translate it to ${targetLang} without altering the pronunciation.` },
 			{ role: 'user' as const, content: input },
 		];
 
@@ -92,6 +92,7 @@ export class Translate {
 
 				const result = translationResponseSchema.parse(parsed);
 				return result;
+				//TODO: Implement caching of translations to avoid redundant API calls
 			} catch (err: any) {
 				lastErr = err;
 				client.logger.warn(`[AI_TRANSLATE] Attempt ${attempt} failed: ${err?.message ?? String(err)}`);

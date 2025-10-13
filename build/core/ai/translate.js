@@ -67,7 +67,7 @@ class Translate {
         };
         this.invoke = async (input, targetLang, retry = 5) => {
             const messages = [
-                { role: 'system', content: `You are a helpful translation assistant. Translate the user's text to ${targetLang} and respond only with a JSON object matching the schema: "{ \"text\": \"...translated text...\" }". Do not include any additional explanation.` },
+                { role: 'system', content: `You are a helpful translation assistant. Translate the user's text to ${targetLang} and respond only with a JSON object matching the schema: "{ \"text\": \"...translated text...\" }". Do not include any additional explanation. Be smart to identify the context and nuances of the text. If the text has a name, make sure to translate it to ${targetLang} without altering the pronunciation.` },
                 { role: 'user', content: input },
             ];
             let attempt = 0;
@@ -99,6 +99,7 @@ class Translate {
                     }
                     const result = schema_1.translationResponseSchema.parse(parsed);
                     return result;
+                    //TODO: Implement caching of translations to avoid redundant API calls
                 }
                 catch (err) {
                     lastErr = err;
