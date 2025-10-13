@@ -83,7 +83,6 @@ const translateCommand: Command = {
 			return await interaction.editReply({ embeds: [embed] });
 		} catch (error: any) {
 			interaction.client.logger.error(`[TRANSLATE_COMMAND] Error: ${error}`);
-			const responseHandler = new DiscordResponse(interaction.client);
 			const embed = responseHandler.error(t('responses.errors.general_error'));
 			if (!interaction.replied) {
 				await interaction.editReply({ embeds: [embed] });

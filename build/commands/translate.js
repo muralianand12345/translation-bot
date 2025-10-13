@@ -79,7 +79,6 @@ const translateCommand = {
         }
         catch (error) {
             interaction.client.logger.error(`[TRANSLATE_COMMAND] Error: ${error}`);
-            const responseHandler = new response_1.default(interaction.client);
             const embed = responseHandler.error(t('responses.errors.general_error'));
             if (!interaction.replied) {
                 await interaction.editReply({ embeds: [embed] });

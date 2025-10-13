@@ -11,11 +11,12 @@ export interface ILogger {
 
 export interface ICommandLoggerOptions {
 	client: discord.Client;
-	commandName: string;
+	commandName?: string | null;
 	guild: discord.Guild | null;
 	user: discord.User | null;
-	channel: discord.TextChannel | null;
+	channel: discord.Channel | null;
 	locale?: string | null;
+	interaction?: discord.Interaction | null;
 }
 
 export interface ICommandLogger {

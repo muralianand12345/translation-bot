@@ -9,7 +9,6 @@ const response_1 = __importDefault(require("../core/response"));
 const config_1 = require("../utils/config");
 const translate_1 = require("../core/ai/translate");
 const locales_1 = require("../core/locales");
-const languages_1 = require("../types/languages");
 const localizationManager = locales_1.LocalizationManager.getInstance();
 const localeDetector = new locales_1.LocaleDetector();
 const config = config_1.ConfigManager.getInstance();
@@ -29,7 +28,6 @@ const translateCommand = {
             const ai = new ai_1.AI(config.getOpenAiApiKey(), config.getOpenAiBaseUrl());
             const translator = new translate_1.Translate(ai);
             let textToDetect = '';
-            // Extract text from embeds if present
             if (message.embeds && message.embeds.length > 0) {
                 const originalEmbed = message.embeds[0];
                 const textParts = [];
@@ -49,32 +47,17 @@ const translateCommand = {
                 }
                 textToDetect = textParts.join(' ');
             }
-            if (!textToDetect && message.content && message.content.trim().length > 0) {
+            if (!textToDetect && message.content && message.content.trim().length > 0)
                 textToDetect = message.content;
-            }
             if (!textToDetect || textToDetect.trim().length === 0) {
                 const embed = responseHandler.info(t('responses.translate.nothing_to_translate'));
                 return await interaction.editReply({ embeds: [embed] });
             }
-            const detectedLanguage = await translator.language_detect(textToDetect);
-            const languageInfo = (0, languages_1.getLanguageByCode)(detectedLanguage);
-            let languageDisplay;
-            if (languageInfo) {
-                languageDisplay = `**${languageInfo.name} (${detectedLanguage.toUpperCase()})**`;
-            }
-            else {
-                languageDisplay = `**${detectedLanguage.toUpperCase()}** (language's code)`;
-            }
-            const embed = new discord_js_1.default.EmbedBuilder()
-                .setColor('#5865f2')
-                .setDescription(`The detected language of the message is ${languageDisplay}.`)
-                .setFooter({ text: interaction.client.user?.username || 'Bot' })
-                .setTimestamp();
-            return await interaction.editReply({ embeds: [embed] });
+            const detectedLanguage = await translator.language_detect(textToDetect, interaction.locale || 'en');
+            return await interaction.editReply({ embeds: [responseHandler.info(detectedLanguage)] });
         }
         catch (error) {
             interaction.client.logger.error(`[LANGUAGE_DETECT_COMMAND] Error: ${error}`);
-            const responseHandler = new response_1.default(interaction.client);
             const embed = responseHandler.error(t('responses.errors.general_error'));
             if (!interaction.replied) {
                 await interaction.editReply({ embeds: [embed] });

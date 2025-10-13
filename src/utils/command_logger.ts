@@ -34,39 +34,57 @@ class CommandLogger implements ICommandLogger {
 	private async createLogEmbed(options: ICommandLoggerOptions): Promise<discord.EmbedBuilder> {
 		const { client, user, commandName, guild, channel, locale } = options;
 
-		const embed = new discord.EmbedBuilder()
-			.setColor('Green')
-			.setAuthor({ name: 'Command Log' })
-			.setTimestamp()
-			.addFields({ name: 'User', value: user ? `${user.tag} (<@${user.id}>)` : 'N/A' }, { name: 'Command', value: commandName || 'N/A' });
+		const embed = new discord.EmbedBuilder().setColor('Green').setAuthor({ name: 'Command Log' }).setTimestamp();
+		embed.addFields({ name: 'User', value: user ? `${user.tag} (<@${user.id}>)` : 'N/A' });
+
+		const interactionAny = options.interaction as any;
+		const commandLabel = commandName || (interactionAny && (interactionAny.commandName || interactionAny.command?.name || interactionAny.name)) || 'N/A';
+		embed.addFields({ name: 'Command', value: `${commandLabel}` });
 
 		if (!guild) {
 			embed.addFields({ name: 'Guild', value: 'DM' });
 		} else {
-			const botGuildNickname = await client.guilds.cache
-				.get(guild.id)
-				?.members.fetch(client.user!.id)
-				.then((member: discord.GuildMember) => member.displayName)
-				.catch(() => 'N/A');
-			embed.addFields({ name: 'Guild', value: `${guild.name} (${guild.id})` }, { name: 'Bot Nickname', value: `${botGuildNickname}` });
+			let botGuildNickname = 'N/A';
+			try {
+				const cached = client.guilds.cache.get(guild.id);
+				if (cached) {
+					const member = await cached.members.fetch(client.user!.id).catch(() => null);
+					if (member) botGuildNickname = member.displayName || 'N/A';
+				}
+			} catch (e) {
+				botGuildNickname = 'N/A';
+			}
+
+			embed.addFields({ name: 'Guild', value: `${guild.name || 'Unknown'} (${guild.id || 'N/A'})` }, { name: 'Bot Nickname', value: `${botGuildNickname}` });
 		}
 
 		if (!channel) {
 			embed.addFields({ name: 'Channel', value: 'DM' });
 		} else {
-			embed.addFields({ name: 'Channel', value: `${channel.name} (<#${channel.id}>)` });
+			let channelDesc = 'N/A';
+			try {
+				if ((channel as any).name) {
+					channelDesc = `${(channel as any).name} (<#${(channel as any).id}>)`;
+				} else if ((channel as any).id) {
+					channelDesc = `<#${(channel as any).id}>`;
+				} else {
+					channelDesc = `${(channel as any).type || 'Unknown'}`;
+				}
+			} catch (e) {
+				channelDesc = 'N/A';
+			}
+			embed.addFields({ name: 'Channel', value: channelDesc });
 		}
 
-		if (locale) {
-			embed.setFooter({ text: `Locale: ${locale}` });
-		}
+		if (locale) embed.setFooter({ text: `Locale: ${locale}` });
 
 		return embed;
 	}
 
 	private createLogMessage(options: ICommandLoggerOptions): string {
 		const { user, commandName, guild, channel, locale } = options;
-		return `${this.getCurrentTimestamp()} '[COMMAND]' ${user?.tag} (${user?.id}) used command ${commandName || 'N/A'} in ${guild ? guild.name : 'DM'} [#${channel ? channel.name : 'DM'}] ${locale ? `[${locale}]` : ''}`;
+		const channelName = (channel as any)?.name || (channel as any)?.id || 'DM';
+		return `${this.getCurrentTimestamp()} '[COMMAND]' ${user?.tag} (${user?.id}) used command ${commandName || (options.interaction ? ((options.interaction as any).commandName || (options.interaction as any).name) : 'N/A')} in ${guild ? guild.name : 'DM'} [#${channelName}] ${locale ? `[${locale}]` : ''}`;
 	}
 
 	public async log(options: ICommandLoggerOptions): Promise<void> {

@@ -1,6 +1,5 @@
-// import { z } from 'zod';
 import { AI } from './index';
-import * as langdetect from 'langdetect';
+import langdetect from 'langdetect';
 
 import client from '../../bot';
 import user_data from '../../events/database/schema/user_data';
@@ -46,16 +45,15 @@ export class Translate {
 			throw new Error(error?.message ?? String(error));
 		}
 	};
-	
-	language_detect = async (text: string): Promise<string> => {
+
+	language_detect = async (text: string, userLang: string): Promise<string> => {
 		try {
-			const detectedResults = langdetect.detect(text);
-			const detected = Array.isArray(detectedResults) && detectedResults.length > 0 ? detectedResults[0] : null;
-			const detected_lang = detected ? detected.lang : 'unknown';
-			client.logger.debug(`[NON-AI] Detected language: ${detected_lang} (confidence: ${detected?.prob})`);
-			return detected_lang;
+			const langCode = langdetect.detectOne(text);
+			const langNames = new Intl.DisplayNames([userLang], { type: 'language' });
+			const result = langNames.of(langCode) || langCode;
+			return `**${result}** (${langCode})` || 'unknown';
 		} catch (error) {
-			client.logger.error(`[NON-AI] Error detecting language: ${error}`);
+			client.logger.error(`[AI_TRANSLATE] Error detecting language: ${error}`);
 			return 'unknown';
 		}
 	};

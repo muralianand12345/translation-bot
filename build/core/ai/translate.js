@@ -1,43 +1,10 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Translate = void 0;
-const langdetect = __importStar(require("langdetect"));
+const langdetect_1 = __importDefault(require("langdetect"));
 const bot_1 = __importDefault(require("../../bot"));
 const user_data_1 = __importDefault(require("../../events/database/schema/user_data"));
 const schema_1 = require("./schema");
@@ -86,16 +53,15 @@ class Translate {
                 throw new Error(error?.message ?? String(error));
             }
         };
-        this.language_detect = async (text) => {
+        this.language_detect = async (text, userLang) => {
             try {
-                const detectedResults = langdetect.detect(text);
-                const detected = Array.isArray(detectedResults) && detectedResults.length > 0 ? detectedResults[0] : null;
-                const detected_lang = detected ? detected.lang : 'unknown';
-                bot_1.default.logger.debug(`[NON-AI] Detected language: ${detected_lang} (confidence: ${detected?.prob})`);
-                return detected_lang;
+                const langCode = langdetect_1.default.detectOne(text);
+                const langNames = new Intl.DisplayNames([userLang], { type: 'language' });
+                const result = langNames.of(langCode) || langCode;
+                return `**${result}** (${langCode})` || 'unknown';
             }
             catch (error) {
-                bot_1.default.logger.error(`[NON-AI] Error detecting language: ${error}`);
+                bot_1.default.logger.error(`[AI_TRANSLATE] Error detecting language: ${error}`);
                 return 'unknown';
             }
         };
