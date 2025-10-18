@@ -1,0 +1,97 @@
+import fs from 'fs';
+import path from 'path';
+import { z } from 'zod';
+import yaml from 'yaml';
+import { config } from 'dotenv';
+import discord from 'discord.js';
+
+const EnvSchema = z.object({
+	TOKEN: z.string(),
+	MONGO_URI: z.string(),
+	DEBUG_MODE: z.union([z.boolean(), z.string()]).transform((val) => {
+		if (typeof val === 'string') return val.toLowerCase() === 'true';
+		return val;
+	}),
+	FEEDBACK_WEBHOOK: z.string(),
+	OPENAI_API_KEY: z.string(),
+	OPENAI_BASE_URL: z.string(),
+});
+
+/**
+ * Manages application configuration using environment variables
+ * Implements the Singleton pattern to ensure only one configuration instance exists
+ * @class ConfigManager
+ */
+export class ConfigManager {
+	private static instance: ConfigManager;
+	private config: z.infer<typeof EnvSchema>;
+
+	private constructor() {
+		const result = config({ quiet: true });
+
+		if (result.error) throw new Error(`Failed to load environment variables: ${result.error.message}`);
+
+		try {
+			this.config = EnvSchema.parse({
+				TOKEN: process.env.TOKEN,
+				MONGO_URI: process.env.MONGO_URI,
+				DEBUG_MODE: process.env.DEBUG_MODE || false,
+				FEEDBACK_WEBHOOK: process.env.FEEDBACK_WEBHOOK,
+				OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+				OPENAI_BASE_URL: process.env.OPENAI_BASE_URL,
+			});
+		} catch (error) {
+			if (error instanceof z.ZodError) {
+				const missingVars = error.issues.map((issue) => issue.path.join('.'));
+				throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+			}
+			throw error;
+		}
+	}
+
+	public static getInstance = (): ConfigManager => {
+		if (!ConfigManager.instance) {
+			ConfigManager.instance = new ConfigManager();
+		}
+		return ConfigManager.instance;
+	};
+
+	public getConfig = (): z.infer<typeof EnvSchema> => {
+		return this.config;
+	};
+
+	public getToken = (): string => {
+		return this.config.TOKEN;
+	};
+
+	public getMongoUri = (): string => {
+		return this.config.MONGO_URI;
+	};
+
+	public isDebugMode = (): boolean => {
+		return this.config.DEBUG_MODE;
+	};
+
+	public getFeedbackWebhook = (): string => {
+		return this.config.FEEDBACK_WEBHOOK;
+	};
+
+	public getOpenAiApiKey = (): string => {
+		return this.config.OPENAI_API_KEY;
+	};
+
+	public getOpenAiBaseUrl = (): string => {
+		return this.config.OPENAI_BASE_URL;
+	};
+}
+
+export const loadConfig = (client: discord.Client) => {
+	try {
+		const configPath = path.join(__dirname, '../../config/config.yml');
+		const file = fs.readFileSync(configPath, 'utf8');
+		return yaml.parse(file);
+	} catch (error) {
+		client.logger.error(`[BOT] Failed to load configuration: ${error}`);
+		process.exit(1);
+	}
+};
