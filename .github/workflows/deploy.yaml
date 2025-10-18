@@ -25,10 +25,10 @@ jobs:
       - name: Create .env file
         run: |
           cat > .env << 'EOF'
-          BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+          TOKEN=${{ secrets.TOKEN }}
           MONGO_URI=${{ secrets.MONGO_URI }}
           OPENAI_BASE_URL=${{ secrets.OPENAI_BASE_URL }}
-          OPENAI_MODEL=${{ secrets.OPENAI_MODEL }}
+          FEEDBACK_WEBHOOK=${{ secrets.FEEDBACK_WEBHOOK }}
           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
           EOF
           echo "Created .env file"
@@ -128,10 +128,10 @@ jobs:
             sed "s|\${REGISTRY_HOST}|${{ env.REGISTRY_HOST }}|g" | \
             sed "s|\${IMAGE_NAME}|${{ env.IMAGE_NAME }}|g" | \
             sed "s|\${IMAGE_TAG}|${IMAGE_TAG}|g" | \
-            sed "s|\${BOT_TOKEN_B64}|$(echo -n '${{ secrets.BOT_TOKEN }}' | base64 -w 0)|g" | \
+            sed "s|\${TOKEN_B64}|$(echo -n '${{ secrets.TOKEN }}' | base64 -w 0)|g" | \
             sed "s|\${MONGO_URI_B64}|$(echo -n '${{ secrets.MONGO_URI }}' | base64 -w 0)|g" | \
             sed "s|\${OPENAI_BASE_URL_B64}|$(echo -n '${{ secrets.OPENAI_BASE_URL }}' | base64 -w 0)|g" | \
-            sed "s|\${OPENAI_MODEL_B64}|$(echo -n '${{ secrets.OPENAI_MODEL }}' | base64 -w 0)|g" | \
+            sed "s|\${FEEDBACK_WEBHOOK_B64}|$(echo -n '${{ secrets.FEEDBACK_WEBHOOK }}' | base64 -w 0)|g" | \
             sed "s|\${OPENAI_API_KEY_B64}|$(echo -n '${{ secrets.OPENAI_API_KEY }}' | base64 -w 0)|g")
           EOF
             fi
