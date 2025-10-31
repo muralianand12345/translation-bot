@@ -50,8 +50,9 @@ class ConfigManager {
             return this.config.OPENAI_BASE_URL;
         };
         const result = (0, dotenv_1.config)({ quiet: true });
-        if (result.error)
+        if (result.error && result.error.code !== 'ENOENT') {
             throw new Error(`Failed to load environment variables: ${result.error.message}`);
+        }
         try {
             this.config = EnvSchema.parse({
                 TOKEN: process.env.TOKEN,
