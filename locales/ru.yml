@@ -1,0 +1,99 @@
+commands:
+    language:
+        name: "язык"
+        description: "Установить настройки языка бота"
+        options:
+            scope:
+                name: "область"
+                description: "Установить язык"
+                choices:
+                    user: "Пользователь"
+                    reset: "Сбросить"
+            language:
+                name: "язык"
+                description: "Выберите предпочитаемый язык"
+    feedback:
+        name: "отзыв"
+        description: "Отправить отзыв разработчикам"
+    ping:
+        name: "пинг"
+        description: "Проверить задержку и состояние подключения бота"
+    help:
+        name: "помощь"
+        description: "Показать все доступные команды и их описания"
+        options:
+            command:
+                name: "команда"
+                description: "Получить подробную информацию о конкретной команде"
+    translate:
+        name: "перевести"
+        description: "Перевести сообщение на другой язык"
+    detect_language:
+        name: "определить-язык"
+        description: "Определить язык сообщения"
+
+responses:
+    errors:
+        no_permission: "🚫 {user}, у вас нет разрешения на использование этой команды!"
+        missing_user_perms: "🚫 У вас нет прав {permissions} для использования этой команды!"
+        missing_bot_perms: "🚫 Мне нужны права {permissions} для выполнения этой команды!"
+        general_error: "Произошла ошибка при выполнении этой команды."
+        feedback_failed: "Не удалось отправить отзыв. Пожалуйста, попробуйте позже."
+        not_found: "Целевое сообщение для перевода не найдено."
+        contact_dev: "Свяжитесь с разработчиком для получения помощи."
+
+    language:
+        user_set: "Ваш язык установлен на **{language}**."
+        reset: "Настройки языка сброшены. Будет использоваться язык Discord."
+        same_language: "Язык уже установлен на **{language}**."
+        unsupported: "Язык **{language}** не поддерживается. Поддерживаемые языки: {languages}"
+        not_set: "Вы не установили язык. Используйте /язык, чтобы выбрать предпочитаемый язык."
+
+    ping:
+        title: "🏓 Понг!"
+        description: "Информация о задержке и подключении бота"
+        api_latency: "Задержка API"
+        websocket_latency: "Задержка WebSocket"
+        database_latency: "Задержка базы данных"
+        uptime: "Время работы"
+        memory_usage: "Использование памяти"
+        footer: "Все системы работают"
+
+    help:
+        title: "📚 Справка по командам"
+        description: "Вот все {total} доступные команды. Используйте `{prefix}help <команда>` для получения подробной информации."
+        footer: "Используйте `/помощь <команда>` для получения более подробной информации о конкретной команде."
+        command_footer: "Информация о команде"
+        command_not_found: "Команда `{command}` не найдена."
+        cooldown: "Время восстановления"
+        permissions: "Разрешения"
+        category: "Категория"
+        options: "Опции"
+        no_cooldown: "Нет"
+        owner_only: "Только для владельца"
+        none: "Нет"
+        no_commands: "Нет команд в этой категории"
+        categories:
+            music: "Музыкальные команды"
+            utility: "Утилитарные команды"
+            other: "Другие команды"
+
+    feedback:
+        sent: "Спасибо за ваш отзыв! Он был отправлен разработчикам."
+
+    translate:
+        nothing_to_translate: "В этом сообщении нечего переводить."
+    
+    detect_language:
+        nothing_to_detect: "Нет текста для определения языка."
+
+    buttons:
+        support_server: "Сервер поддержки"
+
+modals:
+    feedback:
+        title: "Отправить отзыв"
+        type_label: "Тип отзыва"
+        type_placeholder: "Сообщение об ошибке, запрос функции, общий отзыв и т.д."
+        feedback_label: "Ваш отзыв"
+        feedback_placeholder: "Пожалуйста, опишите ваш отзыв подробно..."

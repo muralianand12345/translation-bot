@@ -1,0 +1,99 @@
+commands:
+    language:
+        name: "idioma"
+        description: "Establecer la configuración de idioma del bot"
+        options:
+            scope:
+                name: "alcance"
+                description: "Establecer idioma"
+                choices:
+                    user: "Usuario"
+                    reset: "Restablecer"
+            language:
+                name: "idioma"
+                description: "Elige tu idioma preferido"
+    feedback:
+        name: "comentario"
+        description: "Enviar comentarios a los desarrolladores"
+    ping:
+        name: "ping"
+        description: "Verificar la latencia y el estado de conexión del bot"
+    help:
+        name: "ayuda"
+        description: "Mostrar todos los comandos disponibles y sus descripciones"
+        options:
+            command:
+                name: "comando"
+                description: "Obtener información detallada sobre un comando específico"
+    translate:
+        name: "traducir"
+        description: "Traducir un mensaje a otro idioma"
+    detect_language:
+        name: "detectar-idioma"
+        description: "Detectar el idioma de un mensaje"
+
+responses:
+    errors:
+        no_permission: "🚫 {user}, ¡no tienes permiso para usar este comando!"
+        missing_user_perms: "🚫 ¡No tienes permisos de {permissions} para usar este comando!"
+        missing_bot_perms: "🚫 ¡Necesito permisos de {permissions} para ejecutar este comando!"
+        general_error: "Ocurrió un error al ejecutar este comando."
+        feedback_failed: "No se pudo enviar el comentario. Por favor, inténtalo de nuevo más tarde."
+        not_found: "No se pudo encontrar el mensaje objetivo para traducir."
+        contact_dev: "Contacta al desarrollador para obtener ayuda."
+
+    language:
+        user_set: "Tu idioma ha sido establecido en **{language}**."
+        reset: "La configuración de idioma ha sido restablecida. Se usará el idioma de Discord."
+        same_language: "El idioma ya está establecido en **{language}**."
+        unsupported: "El idioma **{language}** no está soportado. Idiomas soportados: {languages}"
+        not_set: "No has establecido un idioma. Usa /idioma para elegir tu idioma preferido."
+
+    ping:
+        title: "🏓 ¡Pong!"
+        description: "Información de latencia y conexión del bot"
+        api_latency: "Latencia API"
+        websocket_latency: "Latencia WebSocket"
+        database_latency: "Latencia base de datos"
+        uptime: "Tiempo de actividad"
+        memory_usage: "Uso de memoria"
+        footer: "Todos los sistemas funcionando"
+
+    help:
+        title: "📚 Ayuda de comandos"
+        description: "Aquí están todos los {total} comandos disponibles. Usa `{prefix}help <comando>` para obtener información detallada."
+        footer: "Usa `/ayuda <comando>` para obtener más detalles sobre un comando específico."
+        command_footer: "Información del comando"
+        command_not_found: "El comando `{command}` no fue encontrado."
+        cooldown: "Tiempo de espera"
+        permissions: "Permisos"
+        category: "Categoría"
+        options: "Opciones"
+        no_cooldown: "Ninguno"
+        owner_only: "Solo para el propietario"
+        none: "Ninguno"
+        no_commands: "No hay comandos en esta categoría"
+        categories:
+            music: "Comandos de música"
+            utility: "Comandos de utilidad"
+            other: "Otros comandos"
+
+    feedback:
+        sent: "¡Gracias por tu comentario! Ha sido enviado a los desarrolladores."
+
+    translate:
+        nothing_to_translate: "No hay nada que traducir en este mensaje."
+    
+    detect_language:
+        nothing_to_detect: "No hay texto para detectar el idioma."
+
+    buttons:
+        support_server: "Servidor de soporte"
+
+modals:
+    feedback:
+        title: "Enviar comentario"
+        type_label: "Tipo de comentario"
+        type_placeholder: "Reporte de error, solicitud de función, comentario general, etc."
+        feedback_label: "Tu comentario"
+        feedback_placeholder: "Por favor describe tu comentario en detalle..."
