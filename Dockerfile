@@ -16,6 +16,8 @@ COPY package.json yarn.lock ./
 RUN yarn install --production --frozen-lockfile
 
 COPY --from=builder /app/build ./build
+COPY --from=builder /app/config ./config
+COPY --from=builder /app/locales ./locales
 
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S botuser -u 1001 && \
