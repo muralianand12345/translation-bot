@@ -1,0 +1,97 @@
+commands:
+    language:
+        name: "Sprache"
+        description: "Spracheinstellungen für den Bot festlegen"
+        options:
+            scope:
+                name: "Umfang"
+                description: "Sprache festlegen"
+                choices:
+                    user: "Benutzer"
+                    reset: "Zurücksetzen"
+            language:
+                name: "Sprache"
+                description: "Wähle deine bevorzugte Sprache"
+    feedback:
+        name: "Rückmeldung"
+        description: "Feedback an die Entwickler senden"
+    ping:
+        name: "ping"
+        description: "Überprüfe die Latenz und den Verbindungsstatus des Bots"
+    help:
+        name: "Hilfe"
+        description: "Zeige alle verfügbaren Befehle und ihre Beschreibungen an"
+        options:
+            command:
+                name: "Befehl"
+                description: "Rufe detaillierte Informationen zu einem bestimmten Befehl ab"
+    translate:
+        name: "Übersetzen"
+    detect_language:
+        name: 'Sprache erkennen'
+
+responses:
+    errors:
+        no_permission: "🚫 {user}, du hast keine Berechtigung, diesen Befehl zu verwenden!"
+        missing_user_perms: "🚫 Du hast keine {permissions}-Berechtigungen, um diesen Befehl zu verwenden!"
+        missing_bot_perms: "🚫 Ich benötige {permissions}-Berechtigungen, um diesen Befehl auszuführen!"
+        general_error: "Beim Ausführen dieses Befehls ist ein Fehler aufgetreten."
+        feedback_failed: "Feedback konnte nicht gesendet werden. Bitte versuche es später erneut."
+        not_found: "Die zu übersetzende Zielnachricht konnte nicht gefunden werden."
+        contact_dev: "Wende dich an den Entwickler, um Hilfe zu erhalten."
+
+    language:
+        user_set: "Deine Sprache wurde auf **{language}** eingestellt."
+        reset: "Die Spracheinstellungen wurden zurückgesetzt. Es wird die Sprache von Discord verwendet."
+        same_language: "Die Sprache ist bereits auf **{language}** eingestellt."
+        unsupported: "Die Sprache **{language}** wird nicht unterstützt. Unterstützte Sprachen: {languages}"
+        not_set: "Du hast keine Sprache eingestellt. Verwende /language, um deine bevorzugte Sprache auszuwählen."
+
+    ping:
+        title: "🏓 Pong!"
+        description: "Bot-Latenz- und Verbindungsinformationen"
+        api_latency: "API-Latenz"
+        websocket_latency: "WebSocket-Latenz"
+        database_latency: "Datenbank-Latenz"
+        uptime: "Betriebszeit"
+        memory_usage: "Speichernutzung"
+        footer: "Alle Systeme funktionsfähig"
+
+    help:
+        title: "📚 Befehls­hilfe"
+        description: "Hier sind alle {total} verfügbaren Befehle. Verwende `{prefix}help <command>`, um detaillierte Informationen zu erhalten."
+        footer: "Verwende `/help <command>`, um mehr Details zu einem bestimmten Befehl zu erhalten."
+        command_footer: "Befehlsinformationen"
+        command_not_found: "Befehl `{command}` wurde nicht gefunden."
+        cooldown: "Abklingzeit"
+        permissions: "Berechtigungen"
+        category: "Kategorie"
+        options: "Optionen"
+        no_cooldown: "None"
+        owner_only: "Nur für den Besitzer"
+        none: "None"
+        no_commands: "Keine Befehle in dieser Kategorie"
+        categories:
+            music: "Musikbefehle"
+            utility: "Dienstbefehle"
+            other: "Andere Befehle"
+
+    feedback:
+        sent: "Vielen Dank für dein Feedback! Es wurde an die Entwickler gesendet."
+
+    translate:
+        nothing_to_translate: "In dieser Nachricht gibt es nichts zu übersetzen."
+    
+    detect_language:
+        nothing_to_detect: "Es gibt keinen Text, um die Sprache zu erkennen."
+
+    buttons:
+        support_server: "Support Server"
+
+modals:
+    feedback:
+        title: "Feedback senden"
+        type_label: "Feedback-Typ"
+        type_placeholder: "Fehlerbericht, Funktionsanfrage, allgemeines Feedback usw."
+        feedback_label: "Dein Feedback"
+        feedback_placeholder: "Bitte beschreibe dein Feedback ausführlich..."

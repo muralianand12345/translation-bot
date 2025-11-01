@@ -28,8 +28,10 @@ export class ConfigManager {
 
 	private constructor() {
 		const result = config({ quiet: true });
-
-		if (result.error) throw new Error(`Failed to load environment variables: ${result.error.message}`);
+		
+		if (result.error && (result.error as NodeJS.ErrnoException).code !== 'ENOENT') {
+			throw new Error(`Failed to load environment variables: ${result.error.message}`);
+		}
 
 		try {
 			this.config = EnvSchema.parse({
