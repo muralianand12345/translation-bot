@@ -1,0 +1,99 @@
+commands:
+    language:
+        name: "dil"
+        description: "Bot için dil ayarlarını yapılandır"
+        options:
+            scope:
+                name: "kapsam"
+                description: "Dil ayarla"
+                choices:
+                    user: "Kullanıcı"
+                    reset: "Sıfırla"
+            language:
+                name: "dil"
+                description: "Tercih ettiğin dili seç"
+    feedback:
+        name: "geri-bildirim"
+        description: "Geliştiricilere geri bildirim gönder"
+    ping:
+        name: "ping"
+        description: "Botun gecikmesini ve bağlantı durumunu kontrol et"
+    help:
+        name: "yardim"
+        description: "Tüm kullanılabilir komutları ve açıklamalarını göster"
+        options:
+            command:
+                name: "komut"
+                description: "Belirli bir komut hakkında detaylı bilgi al"
+    translate:
+        name: "cevir"
+        description: "Bir mesajı başka bir dile çevir"
+    detect_language:
+        name: "dil-algilama"
+        description: "Bir mesajın dilini algıla"
+
+responses:
+    errors:
+        no_permission: "🚫 {user}, bu komutu kullanma izniniz yok!"
+        missing_user_perms: "🚫 Bu komutu kullanmak için {permissions} izniniz yok!"
+        missing_bot_perms: "🚫 Bu komutu çalıştırmak için {permissions} iznine ihtiyacım var!"
+        general_error: "Bu komutu çalıştırırken bir hata oluştu."
+        feedback_failed: "Geri bildirim gönderilemedi. Lütfen daha sonra tekrar deneyin."
+        not_found: "Çevrilecek hedef mesaj bulunamadı."
+        contact_dev: "Yardım almak için geliştirici ile iletişime geçin."
+
+    language:
+        user_set: "Diliniz **{language}** olarak ayarlandı."
+        reset: "Dil ayarları sıfırlandı. Discord dili kullanılacak."
+        same_language: "Dil zaten **{language}** olarak ayarlanmış."
+        unsupported: "**{language}** dili desteklenmiyor. Desteklenen diller: {languages}"
+        not_set: "Bir dil ayarlamadınız. Tercih ettiğiniz dili seçmek için /dil komutunu kullanın."
+
+    ping:
+        title: "🏓 Pong!"
+        description: "Bot gecikme ve bağlantı bilgileri"
+        api_latency: "API Gecikmesi"
+        websocket_latency: "WebSocket Gecikmesi"
+        database_latency: "Veritabanı Gecikmesi"
+        uptime: "Çalışma Süresi"
+        memory_usage: "Bellek Kullanımı"
+        footer: "Tüm sistemler çalışıyor"
+
+    help:
+        title: "📚 Komut Yardımı"
+        description: "İşte kullanılabilir {total} komut. Detaylı bilgi için `{prefix}help <komut>` kullanın."
+        footer: "Belirli bir komut hakkında daha fazla ayrıntı almak için `/yardim <komut>` kullanın."
+        command_footer: "Komut bilgileri"
+        command_not_found: "`{command}` komutu bulunamadı."
+        cooldown: "Bekleme süresi"
+        permissions: "İzinler"
+        category: "Kategori"
+        options: "Seçenekler"
+        no_cooldown: "Yok"
+        owner_only: "Sadece sahip için"
+        none: "Yok"
+        no_commands: "Bu kategoride komut yok"
+        categories:
+            music: "Müzik komutları"
+            utility: "Yardımcı komutlar"
+            other: "Diğer komutlar"
+
+    feedback:
+        sent: "Geri bildiriminiz için teşekkürler! Geliştiricilere gönderildi."
+
+    translate:
+        nothing_to_translate: "Bu mesajda çevrilecek bir şey yok."
+    
+    detect_language:
+        nothing_to_detect: "Dil algılanacak metin yok."
+
+    buttons:
+        support_server: "Destek Sunucusu"
+
+modals:
+    feedback:
+        title: "Geri Bildirim Gönder"
+        type_label: "Geri Bildirim Türü"
+        type_placeholder: "Hata raporu, özellik isteği, genel geri bildirim vb."
+        feedback_label: "Geri Bildiriminiz"
+        feedback_placeholder: "Lütfen geri bildiriminizi detaylı bir şekilde açıklayın..."

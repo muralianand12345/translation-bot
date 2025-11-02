@@ -1,0 +1,99 @@
+commands:
+    language:
+        name: "langue"
+        description: "Définir les paramètres de langue du bot"
+        options:
+            scope:
+                name: "portée"
+                description: "Définir la langue"
+                choices:
+                    user: "Utilisateur"
+                    reset: "Réinitialiser"
+            language:
+                name: "langue"
+                description: "Choisissez votre langue préférée"
+    feedback:
+        name: "commentaire"
+        description: "Envoyer des commentaires aux développeurs"
+    ping:
+        name: "ping"
+        description: "Vérifier la latence et l'état de connexion du bot"
+    help:
+        name: "aide"
+        description: "Afficher toutes les commandes disponibles et leurs descriptions"
+        options:
+            command:
+                name: "commande"
+                description: "Obtenir des informations détaillées sur une commande spécifique"
+    translate:
+        name: "traduire"
+        description: "Traduire un message dans une autre langue"
+    detect_language:
+        name: "detecter-langue"
+        description: "Détecter la langue d'un message"
+
+responses:
+    errors:
+        no_permission: "🚫 {user}, vous n'avez pas la permission d'utiliser cette commande !"
+        missing_user_perms: "🚫 Vous n'avez pas les permissions {permissions} pour utiliser cette commande !"
+        missing_bot_perms: "🚫 J'ai besoin des permissions {permissions} pour exécuter cette commande !"
+        general_error: "Une erreur s'est produite lors de l'exécution de cette commande."
+        feedback_failed: "Impossible d'envoyer le commentaire. Veuillez réessayer plus tard."
+        not_found: "Le message cible à traduire n'a pas pu être trouvé."
+        contact_dev: "Contactez le développeur pour obtenir de l'aide."
+
+    language:
+        user_set: "Votre langue a été définie sur **{language}**."
+        reset: "Les paramètres de langue ont été réinitialisés. La langue Discord sera utilisée."
+        same_language: "La langue est déjà définie sur **{language}**."
+        unsupported: "La langue **{language}** n'est pas prise en charge. Langues prises en charge : {languages}"
+        not_set: "Vous n'avez pas défini de langue. Utilisez /langue pour choisir votre langue préférée."
+
+    ping:
+        title: "🏓 Pong !"
+        description: "Informations sur la latence et la connexion du bot"
+        api_latency: "Latence API"
+        websocket_latency: "Latence WebSocket"
+        database_latency: "Latence base de données"
+        uptime: "Temps de fonctionnement"
+        memory_usage: "Utilisation de la mémoire"
+        footer: "Tous les systèmes fonctionnent"
+
+    help:
+        title: "📚 Aide des commandes"
+        description: "Voici toutes les {total} commandes disponibles. Utilisez `{prefix}help <commande>` pour obtenir des informations détaillées."
+        footer: "Utilisez `/aide <commande>` pour obtenir plus de détails sur une commande spécifique."
+        command_footer: "Informations sur la commande"
+        command_not_found: "La commande `{command}` n'a pas été trouvée."
+        cooldown: "Temps de recharge"
+        permissions: "Permissions"
+        category: "Catégorie"
+        options: "Options"
+        no_cooldown: "Aucun"
+        owner_only: "Réservé au propriétaire"
+        none: "Aucun"
+        no_commands: "Aucune commande dans cette catégorie"
+        categories:
+            music: "Commandes musicales"
+            utility: "Commandes utilitaires"
+            other: "Autres commandes"
+
+    feedback:
+        sent: "Merci pour votre commentaire ! Il a été envoyé aux développeurs."
+
+    translate:
+        nothing_to_translate: "Il n'y a rien à traduire dans ce message."
+    
+    detect_language:
+        nothing_to_detect: "Il n'y a pas de texte pour détecter la langue."
+
+    buttons:
+        support_server: "Serveur de support"
+
+modals:
+    feedback:
+        title: "Envoyer un commentaire"
+        type_label: "Type de commentaire"
+        type_placeholder: "Rapport de bug, demande de fonctionnalité, commentaire général, etc."
+        feedback_label: "Votre commentaire"
+        feedback_placeholder: "Veuillez décrire votre commentaire en détail..."

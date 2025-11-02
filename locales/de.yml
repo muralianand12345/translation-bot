@@ -1,34 +1,36 @@
 commands:
     language:
-        name: "Sprache"
+        name: "sprache"
         description: "Spracheinstellungen für den Bot festlegen"
         options:
             scope:
-                name: "Umfang"
+                name: "umfang"
                 description: "Sprache festlegen"
                 choices:
                     user: "Benutzer"
                     reset: "Zurücksetzen"
             language:
-                name: "Sprache"
+                name: "sprache"
                 description: "Wähle deine bevorzugte Sprache"
     feedback:
-        name: "Rückmeldung"
+        name: "rückmeldung"
         description: "Feedback an die Entwickler senden"
     ping:
         name: "ping"
         description: "Überprüfe die Latenz und den Verbindungsstatus des Bots"
     help:
-        name: "Hilfe"
+        name: "hilfe"
         description: "Zeige alle verfügbaren Befehle und ihre Beschreibungen an"
         options:
             command:
-                name: "Befehl"
+                name: "befehl"
                 description: "Rufe detaillierte Informationen zu einem bestimmten Befehl ab"
     translate:
-        name: "Übersetzen"
+        name: "übersetzen"
+        description: "Übersetze eine Nachricht in eine andere Sprache"
     detect_language:
-        name: 'Sprache erkennen'
+        name: "sprache-erkennen"
+        description: "Erkenne die Sprache einer Nachricht"
 
 responses:
     errors:
@@ -45,7 +47,7 @@ responses:
         reset: "Die Spracheinstellungen wurden zurückgesetzt. Es wird die Sprache von Discord verwendet."
         same_language: "Die Sprache ist bereits auf **{language}** eingestellt."
         unsupported: "Die Sprache **{language}** wird nicht unterstützt. Unterstützte Sprachen: {languages}"
-        not_set: "Du hast keine Sprache eingestellt. Verwende /language, um deine bevorzugte Sprache auszuwählen."
+        not_set: "Du hast keine Sprache eingestellt. Verwende /sprache, um deine bevorzugte Sprache auszuwählen."
 
     ping:
         title: "🏓 Pong!"
@@ -58,18 +60,18 @@ responses:
         footer: "Alle Systeme funktionsfähig"
 
     help:
-        title: "📚 Befehls­hilfe"
-        description: "Hier sind alle {total} verfügbaren Befehle. Verwende `{prefix}help <command>`, um detaillierte Informationen zu erhalten."
-        footer: "Verwende `/help <command>`, um mehr Details zu einem bestimmten Befehl zu erhalten."
+        title: "📚 Befehlshilfe"
+        description: "Hier sind alle {total} verfügbaren Befehle. Verwende `{prefix}help <befehl>`, um detaillierte Informationen zu erhalten."
+        footer: "Verwende `/hilfe <befehl>`, um mehr Details zu einem bestimmten Befehl zu erhalten."
         command_footer: "Befehlsinformationen"
         command_not_found: "Befehl `{command}` wurde nicht gefunden."
         cooldown: "Abklingzeit"
         permissions: "Berechtigungen"
         category: "Kategorie"
         options: "Optionen"
-        no_cooldown: "None"
+        no_cooldown: "Keine"
         owner_only: "Nur für den Besitzer"
-        none: "None"
+        none: "Keine"
         no_commands: "Keine Befehle in dieser Kategorie"
         categories:
             music: "Musikbefehle"
