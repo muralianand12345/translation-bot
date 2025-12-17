@@ -129,14 +129,14 @@ export class Translate {
 
 				const result = translationResponseSchema.parse(parsed);
 				await this.setCachedTranslation(cacheKey, input, targetLang, result.text);
-				await webhookLog(
+				webhookLog(
 					new discord.EmbedBuilder()
 						.setTitle('Translation Successful')
 						.setColor('#00ff00')
 						.addFields(
 							{ name: 'Target Language', value: `\`${targetLang}\``, inline: true },
 							{ name: 'Attempts', value: attempt.toString(), inline: true },
-							{ name: 'Cache Key', value: `\`${cacheKey.substring(0, 16)}...\``, inline: false },
+							{ name: 'Cache Key', value: `\`${cacheKey}\``, inline: false },
 							{ name: 'Input (truncated)', value: input.length > 1000 ? input.substring(0, 1000) + '...' : input, inline: false },
 							{ name: 'Output (truncated)', value: result.text.length > 1000 ? result.text.substring(0, 1000) + '...' : result.text, inline: false }
 						)
