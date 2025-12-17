@@ -1,6 +1,6 @@
 {
     "name": "translation-bot",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "main": "./build/index.js",
     "repository": "https://github.com/muralianand12345/translation-bot.git",
     "author": "Murali Anand <smurali1607@gmail.com>",
