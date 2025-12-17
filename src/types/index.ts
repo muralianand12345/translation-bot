@@ -13,6 +13,9 @@ declare global {
 			TOKEN: string;
 			MONGO_URI: string;
 			FEEDBACK_WEBHOOK: string;
+			TRANSLATE_WEBHOOK: string;
+			OPENAI_API_KEY: string;
+			OPENAI_BASE_URL: string;
 		}
 	}
 }

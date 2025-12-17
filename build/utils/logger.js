@@ -3,9 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.webhookLog = exports.Logger = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const chalk_1 = __importDefault(require("chalk"));
+const discord_js_1 = __importDefault(require("discord.js"));
 const config_1 = require("./config");
 const configManager = config_1.ConfigManager.getInstance();
 /**
@@ -82,4 +84,14 @@ class Logger {
             this.info('Debug mode is enabled');
     }
 }
-exports.default = Logger;
+exports.Logger = Logger;
+const webhookLog = (embed, username = 'Translation Bot') => {
+    const translateWebhookUrl = configManager.getTranslateWebhook();
+    if (!translateWebhookUrl)
+        return;
+    const webhookClient = new discord_js_1.default.WebhookClient({ url: translateWebhookUrl });
+    webhookClient.send({ username: username, embeds: [embed] }).catch((error) => {
+        throw new Error(`Failed to send webhook log: ${error.message}`);
+    });
+};
+exports.webhookLog = webhookLog;

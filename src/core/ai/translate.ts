@@ -1,9 +1,10 @@
 import crypto from 'crypto';
-
-import { AI } from './index';
+import discord from 'discord.js';
 import langdetect from 'langdetect';
 
+import { AI } from './index';
 import client from '../../bot';
+import { webhookLog } from '../../utils/logger';
 import user_data from '../../events/database/schema/user_data';
 import { translationResponseSchema, TranslationResponse } from './schema';
 import translationCache from '../../events/database/schema/translation_cache';
@@ -128,6 +129,12 @@ export class Translate {
 
 				const result = translationResponseSchema.parse(parsed);
 				await this.setCachedTranslation(cacheKey, input, targetLang, result.text);
+				webhookLog(
+					new discord.EmbedBuilder()
+						.setTitle('Translation Successful')
+						.addFields({ name: 'Target Language', value: `\`${targetLang}\``, inline: true }, { name: 'Attempts', value: attempt.toString(), inline: true }, { name: 'Cache Key', value: `\`${cacheKey}\``, inline: false }, { name: 'Input (truncated)', value: input.length > 1000 ? input.substring(0, 1000) + '...' : input, inline: false }, { name: 'Output (truncated)', value: result.text.length > 1000 ? result.text.substring(0, 1000) + '...' : result.text, inline: false })
+						.setTimestamp()
+				);
 				return result;
 			} catch (err: any) {
 				lastErr = err;

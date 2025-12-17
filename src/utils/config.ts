@@ -13,6 +13,7 @@ const EnvSchema = z.object({
 		return val;
 	}),
 	FEEDBACK_WEBHOOK: z.string(),
+	TRANSLATE_WEBHOOK: z.string().optional(),
 	OPENAI_API_KEY: z.string(),
 	OPENAI_BASE_URL: z.string(),
 });
@@ -28,7 +29,7 @@ export class ConfigManager {
 
 	private constructor() {
 		const result = config({ quiet: true });
-		
+
 		if (result.error && (result.error as NodeJS.ErrnoException).code !== 'ENOENT') {
 			throw new Error(`Failed to load environment variables: ${result.error.message}`);
 		}
@@ -39,6 +40,7 @@ export class ConfigManager {
 				MONGO_URI: process.env.MONGO_URI,
 				DEBUG_MODE: process.env.DEBUG_MODE || false,
 				FEEDBACK_WEBHOOK: process.env.FEEDBACK_WEBHOOK,
+				TRANSLATE_WEBHOOK: process.env.TRANSLATE_WEBHOOK,
 				OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 				OPENAI_BASE_URL: process.env.OPENAI_BASE_URL,
 			});
@@ -76,6 +78,10 @@ export class ConfigManager {
 
 	public getFeedbackWebhook = (): string => {
 		return this.config.FEEDBACK_WEBHOOK;
+	};
+
+	public getTranslateWebhook = (): string | undefined => {
+		return this.config.TRANSLATE_WEBHOOK;
 	};
 
 	public getOpenAiApiKey = (): string => {

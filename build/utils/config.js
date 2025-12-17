@@ -18,6 +18,7 @@ const EnvSchema = zod_1.z.object({
         return val;
     }),
     FEEDBACK_WEBHOOK: zod_1.z.string(),
+    TRANSLATE_WEBHOOK: zod_1.z.string().optional(),
     OPENAI_API_KEY: zod_1.z.string(),
     OPENAI_BASE_URL: zod_1.z.string(),
 });
@@ -43,6 +44,9 @@ class ConfigManager {
         this.getFeedbackWebhook = () => {
             return this.config.FEEDBACK_WEBHOOK;
         };
+        this.getTranslateWebhook = () => {
+            return this.config.TRANSLATE_WEBHOOK;
+        };
         this.getOpenAiApiKey = () => {
             return this.config.OPENAI_API_KEY;
         };
@@ -59,6 +63,7 @@ class ConfigManager {
                 MONGO_URI: process.env.MONGO_URI,
                 DEBUG_MODE: process.env.DEBUG_MODE || false,
                 FEEDBACK_WEBHOOK: process.env.FEEDBACK_WEBHOOK,
+                TRANSLATE_WEBHOOK: process.env.TRANSLATE_WEBHOOK,
                 OPENAI_API_KEY: process.env.OPENAI_API_KEY,
                 OPENAI_BASE_URL: process.env.OPENAI_BASE_URL,
             });
