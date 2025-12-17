@@ -29,6 +29,7 @@ jobs:
           MONGO_URI=${{ secrets.MONGO_URI }}
           OPENAI_BASE_URL=${{ secrets.OPENAI_BASE_URL }}
           FEEDBACK_WEBHOOK=${{ secrets.FEEDBACK_WEBHOOK }}
+          TRANSLATE_WEBHOOK=${{ secrets.TRANSLATE_WEBHOOK }}
           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
           EOF
           echo "Created .env file"
@@ -132,6 +133,7 @@ jobs:
             sed "s|\${MONGO_URI_B64}|$(echo -n '${{ secrets.MONGO_URI }}' | base64 -w 0)|g" | \
             sed "s|\${OPENAI_BASE_URL_B64}|$(echo -n '${{ secrets.OPENAI_BASE_URL }}' | base64 -w 0)|g" | \
             sed "s|\${FEEDBACK_WEBHOOK_B64}|$(echo -n '${{ secrets.FEEDBACK_WEBHOOK }}' | base64 -w 0)|g" | \
+            sed "s|\${TRANSLATE_WEBHOOK_B64}|$(echo -n '${{ secrets.TRANSLATE_WEBHOOK }}' | base64 -w 0)|g" | \
             sed "s|\${OPENAI_API_KEY_B64}|$(echo -n '${{ secrets.OPENAI_API_KEY }}' | base64 -w 0)|g")
           EOF
             fi

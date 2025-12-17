@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
+import discord from 'discord.js';
 
 import { ILogger } from '../types';
 import { ConfigManager } from './config';
@@ -14,7 +15,7 @@ type LogMessage = string | Error;
  * Supports different log levels: success, log, error, warn, info, debug.
  * Logs are stored in a structured directory based on date.
  */
-class Logger implements ILogger {
+export class Logger implements ILogger {
 	private readonly logsBasePath: string;
 	private readonly logFilePath: string;
 	private readonly isDebugEnabled: boolean;
@@ -100,4 +101,12 @@ class Logger implements ILogger {
 	};
 }
 
-export default Logger;
+export const webhookLog = (embed: discord.EmbedBuilder, username: string = 'Translation Bot'): void => {
+	const webhookUrl = configManager.getTranslateWebhook();
+	if (!webhookUrl) return;
+
+	const webhookClient = new discord.WebhookClient({ url: webhookUrl });
+	webhookClient.send({ username: username, embeds: [embed] }).catch((error: Error) => {
+		throw new Error(`Failed to send webhook log: ${error.message}`);
+	});
+};

@@ -6,12 +6,10 @@ bot:
         status: "online"
         interval: 15
         activity:
-            - type: "PLAYING"
-              name: "with translations"
             - type: "LISTENING"
-              name: "your commands"
+              name: "Listening to your commands"
             - type: "WATCHING"
-              name: "for messages to translate"
+              name: "Watching for messages to translate"
     command:
         cooldown_message: "Cooldown: Please wait <duration> seconds."
     log:

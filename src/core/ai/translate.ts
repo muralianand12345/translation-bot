@@ -1,12 +1,44 @@
-import { AI } from './index';
+import crypto from 'crypto';
+import discord from 'discord.js';
 import langdetect from 'langdetect';
 
+import { AI } from './index';
 import client from '../../bot';
+import { webhookLog } from '../../utils/logger';
 import user_data from '../../events/database/schema/user_data';
 import { translationResponseSchema, TranslationResponse } from './schema';
+import translationCache from '../../events/database/schema/translation_cache';
 
 export class Translate {
 	constructor(private ai: AI) {}
+
+	private generateCacheKey = (input: string, targetLang: string): string => {
+		const normalized = `${input.trim().toLowerCase()}:${targetLang.toLowerCase()}`;
+		return crypto.createHash('sha256').update(normalized).digest('hex');
+	};
+
+	private getCachedTranslation = async (cacheKey: string): Promise<string | null> => {
+		try {
+			const cached = await translationCache.findOne({ cacheKey }).lean();
+			if (cached) {
+				client.logger.debug(`[AI_TRANSLATE] Cache hit for key: ${cacheKey.substring(0, 8)}...`);
+				return cached.translatedText;
+			}
+			return null;
+		} catch (error) {
+			client.logger.error(`[AI_TRANSLATE] Error reading cache: ${error}`);
+			return null;
+		}
+	};
+
+	private setCachedTranslation = async (cacheKey: string, inputText: string, targetLang: string, translatedText: string): Promise<void> => {
+		try {
+			await translationCache.findOneAndUpdate({ cacheKey }, { cacheKey, inputText: inputText.substring(0, 500), targetLang, translatedText, createdAt: new Date() }, { upsert: true, new: true });
+			client.logger.debug(`[AI_TRANSLATE] Cached translation for key: ${cacheKey.substring(0, 8)}...`);
+		} catch (error) {
+			client.logger.error(`[AI_TRANSLATE] Error writing cache: ${error}`);
+		}
+	};
 
 	private validateUserData = async (userId: string): Promise<boolean> => {
 		try {
@@ -59,8 +91,13 @@ export class Translate {
 	};
 
 	invoke = async (input: string, targetLang: string, retry: number = 5): Promise<TranslationResponse> => {
+		const cacheKey = this.generateCacheKey(input, targetLang);
+		const cachedResult = await this.getCachedTranslation(cacheKey);
+		if (cachedResult) return { text: cachedResult };
+
+		const systemPrompt = `You are a helpful translation assistant. Translate the user's text to ${targetLang} and respond only with a JSON object matching the schema: "{ \"text\": \"...translated text...\" }". Do not include any additional explanation. Be smart to identify the context and nuances of the text. If the text has a name, make sure to translate it to ${targetLang} without altering the pronunciation. When a word or phrase has multiple valid meanings or translations that could apply in the given context, present them separated by '/' (e.g., he/she, bank/shore, light/bright). Only use this format when the ambiguity is genuinely relevant to the context.`;
 		const messages = [
-			{ role: 'system' as const, content: `You are a helpful translation assistant. Translate the user's text to ${targetLang} and respond only with a JSON object matching the schema: "{ \"text\": \"...translated text...\" }". Do not include any additional explanation. Be smart to identify the context and nuances of the text. If the text has a name, make sure to translate it to ${targetLang} without altering the pronunciation.` },
+			{ role: 'system' as const, content: systemPrompt },
 			{ role: 'user' as const, content: input },
 		];
 
@@ -70,7 +107,7 @@ export class Translate {
 		while (attempt < retry) {
 			attempt++;
 			try {
-				const response = await this.ai.invoke(messages, client.config.ai.translate_model, { response_format: { type: 'json_object' } }); //response_format: { type: 'json_schema', json_schema: { name: 'translation_response', schema: z.toJSONSchema(translationResponseSchema) } } });
+				const response = await this.ai.invoke(messages, client.config.ai.translate_model, { response_format: { type: 'json_object' } });
 				const content = response?.choices?.[0]?.message?.content;
 				if (!content || typeof content !== 'string') throw new Error('Empty response content');
 
@@ -91,8 +128,21 @@ export class Translate {
 				}
 
 				const result = translationResponseSchema.parse(parsed);
+				await this.setCachedTranslation(cacheKey, input, targetLang, result.text);
+				webhookLog(
+					new discord.EmbedBuilder()
+						.setTitle('Translation Successful')
+						.setColor('#00ff00')
+						.addFields(
+							{ name: 'Target Language', value: `\`${targetLang}\``, inline: true },
+							{ name: 'Attempts', value: attempt.toString(), inline: true },
+							{ name: 'Cache Key', value: `\`${cacheKey}\``, inline: false },
+							{ name: 'Input (truncated)', value: input.length > 1000 ? input.substring(0, 1000) + '...' : input, inline: false },
+							{ name: 'Output (truncated)', value: result.text.length > 1000 ? result.text.substring(0, 1000) + '...' : result.text, inline: false }
+						)
+						.setTimestamp()
+				);
 				return result;
-				//TODO: Implement caching of translations to avoid redundant API calls
 			} catch (err: any) {
 				lastErr = err;
 				client.logger.warn(`[AI_TRANSLATE] Attempt ${attempt} failed: ${err?.message ?? String(err)}`);

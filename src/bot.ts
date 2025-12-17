@@ -1,7 +1,7 @@
 import discord from 'discord.js';
 
 import { Command } from './types';
-import Logger from './utils/logger';
+import { Logger } from './utils/logger';
 import { loadConfig } from './utils/config';
 import CommandLogger from './utils/command_logger';
 import { LocalizationManager } from './core/locales';
