@@ -86,10 +86,10 @@ class Logger {
 }
 exports.Logger = Logger;
 const webhookLog = (embed, username = 'Translation Bot') => {
-    const translateWebhookUrl = configManager.getTranslateWebhook();
-    if (!translateWebhookUrl)
+    const webhookUrl = configManager.getTranslateWebhook();
+    if (!webhookUrl)
         return;
-    const webhookClient = new discord_js_1.default.WebhookClient({ url: translateWebhookUrl });
+    const webhookClient = new discord_js_1.default.WebhookClient({ url: webhookUrl });
     webhookClient.send({ username: username, embeds: [embed] }).catch((error) => {
         throw new Error(`Failed to send webhook log: ${error.message}`);
     });

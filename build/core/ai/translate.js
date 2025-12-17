@@ -135,9 +135,10 @@ class Translate {
                     }
                     const result = schema_1.translationResponseSchema.parse(parsed);
                     await this.setCachedTranslation(cacheKey, input, targetLang, result.text);
-                    (0, logger_1.webhookLog)(new discord_js_1.default.EmbedBuilder()
+                    await (0, logger_1.webhookLog)(new discord_js_1.default.EmbedBuilder()
                         .setTitle('Translation Successful')
-                        .addFields({ name: 'Target Language', value: `\`${targetLang}\``, inline: true }, { name: 'Attempts', value: attempt.toString(), inline: true }, { name: 'Cache Key', value: `\`${cacheKey}\``, inline: false }, { name: 'Input (truncated)', value: input.length > 1000 ? input.substring(0, 1000) + '...' : input, inline: false }, { name: 'Output (truncated)', value: result.text.length > 1000 ? result.text.substring(0, 1000) + '...' : result.text, inline: false })
+                        .setColor('#00ff00')
+                        .addFields({ name: 'Target Language', value: `\`${targetLang}\``, inline: true }, { name: 'Attempts', value: attempt.toString(), inline: true }, { name: 'Cache Key', value: `\`${cacheKey.substring(0, 16)}...\``, inline: false }, { name: 'Input (truncated)', value: input.length > 1000 ? input.substring(0, 1000) + '...' : input, inline: false }, { name: 'Output (truncated)', value: result.text.length > 1000 ? result.text.substring(0, 1000) + '...' : result.text, inline: false })
                         .setTimestamp());
                     return result;
                 }

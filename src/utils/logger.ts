@@ -102,10 +102,10 @@ export class Logger implements ILogger {
 }
 
 export const webhookLog = (embed: discord.EmbedBuilder, username: string = 'Translation Bot'): void => {
-	const translateWebhookUrl = configManager.getTranslateWebhook();
-	if (!translateWebhookUrl) return;
+	const webhookUrl = configManager.getTranslateWebhook();
+	if (!webhookUrl) return;
 
-	const webhookClient = new discord.WebhookClient({ url: translateWebhookUrl });
+	const webhookClient = new discord.WebhookClient({ url: webhookUrl });
 	webhookClient.send({ username: username, embeds: [embed] }).catch((error: Error) => {
 		throw new Error(`Failed to send webhook log: ${error.message}`);
 	});
