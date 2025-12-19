@@ -21,5 +21,6 @@ export interface IConfig {
 	};
 	ai: {
 		translate_model: string;
+		summary_model: string;
 	};
 }

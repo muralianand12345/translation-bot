@@ -31,6 +31,8 @@ commands:
     detect_language:
         name: "detecter-langue"
         description: "Détecter la langue d'un message"
+    summary:
+        name: "Résumer"
 
 responses:
     errors:
@@ -86,6 +88,11 @@ responses:
     
     detect_language:
         nothing_to_detect: "Il n'y a pas de texte pour détecter la langue."
+
+    summary:
+        title: "📝 Résumé"
+        nothing_to_summarize: "Il n'y a rien à résumer dans ce message."
+        unsupported_content: "Impossible de résumer les images, pièces jointes ou autocollants. Seul le contenu textuel est pris en charge."
 
     buttons:
         support_server: "Serveur de support"

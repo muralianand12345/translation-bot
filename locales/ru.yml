@@ -31,6 +31,8 @@ commands:
     detect_language:
         name: "определить-язык"
         description: "Определить язык сообщения"
+    summary:
+        name: "Резюмировать"
 
 responses:
     errors:
@@ -86,6 +88,11 @@ responses:
     
     detect_language:
         nothing_to_detect: "Нет текста для определения языка."
+
+    summary:
+        title: "📝 Резюме"
+        nothing_to_summarize: "В этом сообщении нечего резюмировать."
+        unsupported_content: "Невозможно резюмировать изображения, вложения или стикеры. Поддерживается только текстовый контент."
 
     buttons:
         support_server: "Сервер поддержки"

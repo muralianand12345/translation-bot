@@ -31,6 +31,8 @@ commands:
     detect_language:
         name: "dil-algilama"
         description: "Bir mesajın dilini algıla"
+    summary:
+        name: "Özetle"
 
 responses:
     errors:
@@ -86,6 +88,11 @@ responses:
     
     detect_language:
         nothing_to_detect: "Dil algılanacak metin yok."
+
+    summary:
+        title: "📝 Özet"
+        nothing_to_summarize: "Bu mesajda özetlenecek bir şey yok."
+        unsupported_content: "Resimler, ekler veya çıkartmalar özetlenemez. Sadece metin içeriği desteklenir."
 
     buttons:
         support_server: "Destek Sunucusu"

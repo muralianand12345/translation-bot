@@ -20,6 +20,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AI = void 0;
 const openai_1 = __importDefault(require("openai"));
 __exportStar(require("./schema"), exports);
+__exportStar(require("./summary"), exports);
 __exportStar(require("./translate"), exports);
 class AI {
     constructor(apiKey, baseURL, options = {}) {

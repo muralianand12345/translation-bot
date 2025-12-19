@@ -18,3 +18,4 @@ bot:
 
 ai:
     translate_model: "llama-3.1-8b-instant"
+    summary_model: "openai/gpt-oss-20b"
