@@ -31,6 +31,8 @@ commands:
     detect_language:
         name: "sprache-erkennen"
         description: "Erkenne die Sprache einer Nachricht"
+    summary:
+        name: "Zusammenfassen"
 
 responses:
     errors:
@@ -86,6 +88,11 @@ responses:
     
     detect_language:
         nothing_to_detect: "Es gibt keinen Text, um die Sprache zu erkennen."
+
+    summary:
+        title: "📝 Zusammenfassung"
+        nothing_to_summarize: "In dieser Nachricht gibt es nichts zusammenzufassen."
+        unsupported_content: "Bilder, Anhänge oder Sticker können nicht zusammengefasst werden. Nur Textinhalte werden unterstützt."
 
     buttons:
         support_server: "Support Server"

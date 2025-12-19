@@ -12,3 +12,11 @@ export interface ITranslationCache extends mongoose.Document {
 	translatedText: string;
 	createdAt: Date;
 }
+
+export interface ISummaryCache extends mongoose.Document {
+	cacheKey: string;
+	inputText: string;
+	targetLang: string;
+	summaryText: string;
+	createdAt: Date;
+}

@@ -28,7 +28,9 @@ commands:
     translate:
         name: "translate"
     detect_language:
-        name: 'Detect Language'
+        name: "Detect Language"
+    summary:
+        name: "Summarize"
 
 responses:
     errors:
@@ -84,6 +86,11 @@ responses:
     
     detect_language:
         nothing_to_detect: "There is no text to detect the language."
+
+    summary:
+        title: "📝 Summary"
+        nothing_to_summarize: "There is nothing to summarize in that message."
+        unsupported_content: "Cannot summarize images, attachments, or stickers. Only text content is supported."
 
     buttons:
         support_server: "Support Server"

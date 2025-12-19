@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 
 export * from './schema';
+export * from './summary';
 export * from './translate';
 
 export class AI {
